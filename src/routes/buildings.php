@@ -121,16 +121,16 @@ $app->get('/api/floors', function(Request $request, Response $response){
     }
 });
 
-$app->get('/api/floor/{id}', function(Request $request, Response $response){
+$app->get('/api/floorByIdBlock/{id}', function(Request $request, Response $response){
     $id = $request->getAttribute('id');
-    $sql = "SELECT * FROM tb_piso WHERE id_piso = $id AND estado=1";
+    $sql = "SELECT * FROM tb_piso WHERE id_bloque = $id AND estado=1";
     try{
         // Get DB Object
         $db = new db();
         // Connect
         $db = $db->connect();
         $stmt = $db->query($sql);
-        $result = $stmt->fetch(PDO::FETCH_OBJ);
+        $result = $stmt->fetchAll(PDO::FETCH_OBJ);
         $db = null;
         echo json_encode($result);
     } catch(PDOException $e){
@@ -138,7 +138,7 @@ $app->get('/api/floor/{id}', function(Request $request, Response $response){
     }
 });
 
-// buildings*****************************************************************
+// spaces*****************************************************************************
 //************************************************************************************
 //************************************************************************************
 
@@ -167,7 +167,26 @@ $app->get('/api/space/{id}', function(Request $request, Response $response){
         // Connect
         $db = $db->connect();
         $stmt = $db->query($sql);
-        $result = $stmt->fetch(PDO::FETCH_OBJ);
+        $customer = $stmt->fetch(PDO::FETCH_OBJ);
+        $db = null;
+        echo json_encode($customer);
+    } catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+    }
+});
+
+$app->get('/api/spaceByfloorId/{id}', function(Request $request, Response $response){
+    $id = $request->getAttribute('id');
+    $sql = "SELECT * FROM bd_park.spacelibres
+            WHERE  dia = '29' AND mes = '05' AND anio = '2017' AND idpiso = '$id'
+            ";
+    try{
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $result = $stmt->fetchAll(PDO::FETCH_OBJ);
         $db = null;
         echo json_encode($result);
     } catch(PDOException $e){
@@ -176,9 +195,11 @@ $app->get('/api/space/{id}', function(Request $request, Response $response){
 });
 //
 
-$app->get('/api/lib', function(Request $request, Response $response){
-    $sql = "SELECT * FROM spacelibres";
-
+$app->get('/api/freeSpaces', function(Request $request, Response $response){
+    $sql = "SELECT * FROM bd_park.spacelibres
+            WHERE  dia = '29' AND mes = '05' AND anio = '2017'
+            ORDER BY hora
+            LIMIT 0 , 5;";
      try{
         // Get DB Object
         $db = new db();
@@ -191,6 +212,7 @@ $app->get('/api/lib', function(Request $request, Response $response){
     } catch(PDOException $e){
         echo '{"error": {"text": '.$e->getMessage().'}';
     }
+
 });
 
 // buildings*****************************************************************
