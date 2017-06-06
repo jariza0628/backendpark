@@ -241,6 +241,30 @@ $app->get('/api/freeSpacesByBuilding/{id}', function(Request $request, Response 
 
 });
 
+//total de esacio por edificio
+$app->get('/api/SpacesByBuilding/{id}', function(Request $request, Response $response){
+    $id = $request->getAttribute('id');
+    $sql = "SELECT COUNT(*) AS totalEspacios FROM tb_espacio 
+            INNER JOIN tb_piso ON tb_espacio.id_piso = tb_piso.id_piso 
+            INNER JOIN tb_bloque ON tb_bloque.id_bloque = tb_piso.id_bloque 
+            INNER JOIN tb_edificio ON tb_edificio.id_edificio = tb_bloque.id_edificio 
+            WHERE tb_edificio.id_edificio='$id' 
+           ";
+     try{
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $result = $stmt->fetch(PDO::FETCH_OBJ);
+        $db = null;
+        echo json_encode($result);
+    } catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+    }
+
+});
+
 
 // buildings*****************************************************************
 //************************************************************************************
