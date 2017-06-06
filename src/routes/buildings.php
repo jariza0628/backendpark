@@ -215,6 +215,75 @@ $app->get('/api/freeSpaces', function(Request $request, Response $response){
 
 });
 
+//ESPACIOS LIBRES POR EDIFICIO ID
+
+
+$app->get('/api/freeSpacesByBuilding/{id}', function(Request $request, Response $response){
+    $id = $request->getAttribute('id');
+    $sql = "SELECT COUNT(*) AS ESPACIOSLIBRESHOY FROM tb_espacio 
+            INNER JOIN tb_piso ON tb_espacio.id_piso = tb_piso.id_piso 
+            INNER JOIN tb_bloque ON tb_bloque.id_bloque = tb_piso.id_bloque 
+            INNER JOIN tb_edificio ON tb_edificio.id_edificio = tb_bloque.id_edificio 
+            WHERE tb_edificio.id_edificio='$id' 
+            AND tb_espacio.id_espacio NOT in (SELECT id_espacio FROM tb_temp_usuario)";
+     try{
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $result = $stmt->fetch(PDO::FETCH_OBJ);
+        $db = null;
+        echo json_encode($result);
+    } catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+    }
+
+});
+
+
 // buildings*****************************************************************
 //************************************************************************************
 //************************************************************************************
+
+$app->post('/api/save/space', function(Request $request, Response $response){
+    $id_espacio = 1;
+    $id_usuario = 2;
+
+    $sql="INSERT INTO `tb_temp_usuario` (`id_temp`, `fecha`, `estado`, `id_usuario`, `id_espacio`)
+          VALUES (NULL, '".date("d/m/Y")."', '1', :id_usuario, :id_espacio);";
+    
+   
+    try{
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':id_espacio', $id_espacio);
+        $stmt->bindParam(':id_usuario',  $id_usuario);
+        
+        $stmt->execute();
+        echo '{"notice": {"text": "Customer Added"}';
+    } catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+    }
+});
+
+// Delete desbloquear spacio
+$app->DELETE('/api/delSpaceTmp/delete/{id}', function(Request $request, Response $response){
+    $id = $request->getAttribute('id');
+    $sql = "DELETE FROM `tb_temp_usuario` WHERE `tb_temp_usuario`.`id_temp` = '$id'";
+    try{
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+        $db = null;
+        echo '{"notice": {"text": "Customer Deleted"}';
+    } catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+    }
+});
