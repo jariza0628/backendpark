@@ -15,8 +15,9 @@ $app->add(function ($req, $res, $next) {
 // buildings*****************************************************************
 //************************************************************************************
 //************************************************************************************
+
 $app->get('/api/buildings', function(Request $request, Response $response){
-    $sql = "SELECT * FROM tb_edificio";
+    $sql = "SELECT * FROM tb_edificio WHERE estado=1";
     try{
         // Get DB Object
         $db = new db();
