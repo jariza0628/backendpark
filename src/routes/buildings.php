@@ -395,26 +395,96 @@ $app->get('/api/SpacesOccupiedByUser/{id}', function(Request $request, Response 
 
 });
 
+$app->get('/api/log/{data}/{data2}', function(Request $request, Response $response){
+    $email = $request->getAttribute('data');
+    $clave = $request->getAttribute('data2');
+    //echo $email;
+    //echo $clave;
+    $sql="SELECT * FROM `tb_usuario` 
+    WHERE `email`='".$email."' AND `clave`='".md5($clave)."'";
+    //echo "<br>".$sql."<br>";
+
+   
+   
+    try{
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $result = $stmt->fetch(PDO::FETCH_OBJ);
+        $db = null;
+        echo json_encode($result);
+    } catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+    }
+});
+$app->get('/api/daysFreeByUser/{id}', function(Request $request, Response $response){
+    $id = $request->getAttribute('id');
+   
+    //echo $email;
+    //echo $clave;
+   $sql = "SELECT tb_calendario.`id_calendario`, tb_calendario.`dia`, tb_calendario.`mes`, tb_calendario.`anio`, 
+        tb_calendario.`horario`,tb_espacio.`numero`, tb_espacio.`estado` 
+        FROM `tb_usuario` INNER JOIN tb_espacio ON tb_usuario.id_usuario = tb_espacio.id_usuario 
+        INNER JOIN tb_calendario oN tb_espacio.id_espacio = tb_calendario.id_espacio 
+        WHERE tb_usuario.id_usuario = 11 AND tb_usuario.id_edificio = 1";
+    //echo "<br>".$sql."<br>";
+
+   
+   
+    try{
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $result = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $db = null;
+        echo json_encode($result);
+    } catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+    }
+});
+
+$app->delete('/api/FreeDayByUser/delete/{id}', function(Request $request, Response $response){
+    $id = $request->getAttribute('id');
+    $sql = "DELETE FROM `tb_calendario` WHERE `tb_calendario`.`id_calendario` = '$id'";
+    try{
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+        $db = null;
+        echo '{"notice": {"text": "Customer Deleted"}';
+    } catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+    }
+});
+
+
 $app->get('/api/freeSpace/{info}', function(Request $request, Response $response){
     $info = $request->getAttribute('info');
     $idespacio = "";
     //echo $info."<br>";
 
     $anio1 = substr($info, 0,4);
-    $mes = substr($info, -17,2);
-    $dia = substr($info, -15,2);
+    $mes = substr($info, -19,2);
+    $dia = substr($info, -17,2);
     //echo $anio1."<br>";
     //echo $dia."<br>";
-    //echo $mes."<br>"; 
-    $anio = substr($info, -12,4);
-    $mes2 = substr($info, -8,2);
-    $dia2 = substr($info, -6,2);
+  //echo $mes."<br>"; 
+    $anio = substr($info, -14,4);
+    $mes2 = substr($info, -10,2);
+    $dia2 = substr($info, -8,2);
     //echo $anio."<br>";
     //echo $dia2."<br>";
     //echo $mes2."<br>"; 
-    $userid = substr($info, -3,1);
+    $userid = (int) substr($info, -5,3);
     //echo $userid."<br>";
-    $jornada = substr($info, -1,1);
+    $jornada = (int) substr($info, -1,1);
     //echo $jornada."<br>";
     //consultar el espacio por el id del usuario
     $sql="SELECT * FROM `tb_espacio` WHERE `id_usuario`= ".$userid."";
@@ -445,7 +515,15 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
     $diasdelmes = cuantodistieneelmes($quemes); //establecer cuantos dias tine el mes selecionado 31, 30 o febrero
     
     //echo "el mes tiene:  ".$diasdelmes."<br>";
-
+    if ($jornada=0) {
+        $jornada = "Libre Todo el dia";
+    }
+    if ($jornada=1) {
+        $jornada = "Libre de 8:00 a 12:00";
+    }
+    if ($jornada=2) {
+        $jornada = "Libre de 14:00 a 18:00";
+    }
     //mes = mes and anio1 = anio1
     if($diferenciames == 0 AND $diferenciaanio == 0){
        
@@ -551,29 +629,11 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
         }
     }
     
-
- 
-
-    /*
-    $sql = "SELECT COUNT(*) AS ocupado FROM `tb_temp_usuario` WHERE `id_usuario`='$info'
-           ";
-     try{
-        // Get DB Object
-        $db = new db();
-        // Connect
-        $db = $db->connect();
-        $stmt = $db->query($sql);
-        $result = $stmt->fetch(PDO::FETCH_OBJ);
-        $db = null;
-        //echo json_encode($result);
-    } catch(PDOException $e){
-        //echo '{"error": {"text": '.$e->getMessage().'}';
-    }*/
-
 });
 
    function cuantodistieneelmes($mes)
     {
+
         if($mes == 1 OR $mes == 3 OR $mes == 5 OR $mes == 7 OR $mes == 8 OR $mes == 10 OR $mes == 12){
         $diasdelmes = 31;
         }
