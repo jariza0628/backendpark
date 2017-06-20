@@ -428,7 +428,7 @@ $app->get('/api/daysFreeByUser/{id}', function(Request $request, Response $respo
         tb_calendario.`horario`,tb_espacio.`numero`, tb_espacio.`estado` 
         FROM `tb_usuario` INNER JOIN tb_espacio ON tb_usuario.id_usuario = tb_espacio.id_usuario 
         INNER JOIN tb_calendario oN tb_espacio.id_espacio = tb_calendario.id_espacio 
-        WHERE tb_usuario.id_usuario = 11 AND tb_usuario.id_edificio = 1";
+        WHERE tb_usuario.id_usuario = '$id' AND tb_usuario.id_edificio = 1";
     //echo "<br>".$sql."<br>";
 
    
