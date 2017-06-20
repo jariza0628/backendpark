@@ -515,13 +515,13 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
     $diasdelmes = cuantodistieneelmes($quemes); //establecer cuantos dias tine el mes selecionado 31, 30 o febrero
     
     //echo "el mes tiene:  ".$diasdelmes."<br>";
-    if ($jornada=0) {
+    if ($jornada==0) {
         $jornada = "Libre Todo el dia";
     }
-    if ($jornada=1) {
+    if ($jornada==1) {
         $jornada = "Libre de 8:00 a 12:00";
     }
-    if ($jornada=2) {
+    if ($jornada==2) {
         $jornada = "Libre de 14:00 a 18:00";
     }
     //mes = mes and anio1 = anio1
