@@ -228,10 +228,38 @@ $app->get('/api/spaceByfloorId/{id}', function(Request $request, Response $respo
 
 $app->get('/api/freeSpaces', function(Request $request, Response $response){
     $dia = date("d");$mes=date("m");$anio=date("Y");
+    /*
     $sql = "SELECT * FROM bd_park.spacelibres
             WHERE  dia = '".$dia."' AND mes = '".$mes."' AND anio = '".$anio."'
             ORDER BY hora
-            LIMIT 0 , 5;";
+            LIMIT 0 , 5;";*/
+    $sql = " SELECT 
+        `tb_espacio`.`id_espacio` AS `espacioid`,
+        `tb_espacio`.`numero` AS `nombre`,
+        `tb_espacio`.`id_piso` AS `idpiso`,
+        `tb_bloque`.`id_bloque` AS `idbloque`,
+        `tb_piso`.`numero` AS `nombrepiso`,
+        `tb_calendario`.`dia` AS `dia`,
+        `tb_calendario`.`mes` AS `mes`,
+        `tb_calendario`.`anio` AS `anio`,
+        `tb_calendario`.`horario` AS `hora`,
+        `tb_edificio`.`id_edificio` AS `idedificio`
+    FROM
+        ((((`tb_calendario`
+        JOIN `tb_espacio` ON ((`tb_calendario`.`id_espacio` = `tb_espacio`.`id_espacio`)))
+        JOIN `tb_piso` ON ((`tb_piso`.`id_piso` = `tb_espacio`.`id_piso`)))
+        JOIN `tb_bloque` ON ((`tb_bloque`.`id_bloque` = `tb_piso`.`id_bloque`)))
+        JOIN `tb_edificio` ON ((`tb_edificio`.`id_edificio` = `tb_bloque`.`id_edificio`)))
+    WHERE
+        ((NOT (`tb_espacio`.`id_espacio` IN (SELECT 
+                `tb_temp_usuario`.`id_espacio`
+            FROM
+                `tb_temp_usuario` WHERE fecha = '".$dia."/".$mes."/".$anio."')))
+            AND (`tb_espacio`.`estado` = 1))
+    AND  dia = '".$dia."' AND mes = '".$mes."' AND anio = '".$anio."'
+            ORDER BY hora
+            LIMIT 0 , 5
+            ";
      try{
         // Get DB Object
         $db = new db();
