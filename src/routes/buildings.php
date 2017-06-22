@@ -469,7 +469,46 @@ $app->delete('/api/FreeDayByUser/delete/{id}', function(Request $request, Respon
     }
 });
 
+$app->get('/api/idSpaceByuser/{iduser}', function(Request $request, Response $response){
+    $dia = date("d");$mes=date("m");$anio=date("Y");
+    $id = $request->getAttribute('iduser');
+    $sql="SELECT `id_espacio`FROM `tb_espacio` WHERE id_usuario='$id'";
+    //echo "<br>".$sql."<br>";
+    try{
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $result = $stmt->fetch(PDO::FETCH_OBJ);
+        $db = null;
+        echo json_encode($result);
+    } catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+    }
+});
+$app->get('/api/MySpacesOccupiedByUser/{idspace}', function(Request $request, Response $response){
+    $dia = date("d");$mes=date("m");$anio=date("Y");
+    $id = $request->getAttribute('idspace');
+    $sql="SELECT tb_temp_usuario.id_usuario, CONCAT(tb_usuario.nombre, ' ',tb_usuario.apellido) as nombre FROM `tb_temp_usuario` INNER JOIN tb_usuario ON tb_temp_usuario.id_usuario = tb_usuario.id_usuario 
+        WHERE `id_espacio`= '$id' AND `fecha`= '".$dia."/".$mes."/".$anio."'";
+    //echo "<br>".$sql."<br>";
 
+   
+   
+    try{
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $result = $stmt->fetch(PDO::FETCH_OBJ);
+        $db = null;
+        echo json_encode($result);
+    } catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+    }
+});
 $app->get('/api/freeSpace/{info}', function(Request $request, Response $response){
     $info = $request->getAttribute('info');
     $idespacio = "";
