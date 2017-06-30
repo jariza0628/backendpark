@@ -430,16 +430,13 @@ $app->get('/api/SpacesOccupiedByUser/{id}', function(Request $request, Response 
 });
 
 $app->get('/api/log/{data}/{data2}', function(Request $request, Response $response){
-    $email = $request->getAttribute('data');
+    $email = strtolower($request->getAttribute('data'));
     $clave = $request->getAttribute('data2');
     //echo $email;
     //echo $clave;
     $sql="SELECT * FROM `tb_usuario` 
     WHERE `email`='".$email."' AND `clave`='".md5($clave)."'";
     //echo "<br>".$sql."<br>";
-
-   
-   
     try{
         // Get DB Object
         $db = new db();
@@ -455,7 +452,6 @@ $app->get('/api/log/{data}/{data2}', function(Request $request, Response $respon
 });
 $app->get('/api/daysFreeByUser/{id}', function(Request $request, Response $response){
     $id = $request->getAttribute('id');
-   
     //echo $email;
     //echo $clave;
    $sql = "SELECT tb_calendario.`id_calendario`, tb_calendario.`dia`, tb_calendario.`mes`, tb_calendario.`anio`, 
@@ -464,9 +460,6 @@ $app->get('/api/daysFreeByUser/{id}', function(Request $request, Response $respo
         INNER JOIN tb_calendario oN tb_espacio.id_espacio = tb_calendario.id_espacio 
         WHERE tb_usuario.id_usuario = '$id' AND tb_usuario.id_edificio = 1";
     //echo "<br>".$sql."<br>";
-
-   
-   
     try{
         // Get DB Object
         $db = new db();
