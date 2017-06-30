@@ -680,12 +680,7 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
                 while ( $diai <=  $diaf) {
                     $diaa = $diai;
                     $mess = $m1;
-                    if($diai<10){
-                        $diaa = "0". $diai;
-                    }
-                    if($m1<10){
-                        $mess = "0".$m1;
-                    }
+                  
                     $var = consultar_si_exite_calendario($diaa, $mess, $a1, $idespacio);
                     //echo "entro var: ".$var;
                     if($var=="vacio"){
@@ -713,6 +708,12 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
 });
 
     function consultar_si_exite_calendario($dia, $mes, $anio, $id_espacio){
+         if($dia<10 && (strlen($dia)<2)){
+            $dia = "0". $dia;
+          }
+          if($mes<10 && (strlen($mes)<2)){
+            $mes = "0".$mes;
+          }
          $resultado = "vacio"; 
          $sql="SELECT * FROM `tb_calendario` WHERE `dia`=".$dia." AND `mes` = ".$mes." AND `anio`= ".$anio." AND `id_espacio` = ".$id_espacio."";
          //echo $sql."<br>";
@@ -737,10 +738,12 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
     }
 
     function insertar_calendario($dia, $mes, $anio, $jornada, $id_espacio){
-             if($dia<10){
+                    if($dia<10 && (strlen($dia)<2)){
                         $dia = "0". $dia;
                     }
-                    
+                    if($mes<10 && (strlen($mes)<2)){
+                        $mes = "0".$mes;
+                    }
           $sql = "INSERT INTO `tb_calendario` (`id_calendario`, `dia`, `mes`, `anio`, `horario`, `id_espacio`) VALUES 
             (NULL, '".$dia."', '".$mes."', '".$anio."', '".$jornada."', '".$id_espacio."');";
             //echo $sql."<br>";
