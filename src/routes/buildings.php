@@ -380,7 +380,36 @@ $app->delete('/api/delSpaceTmp/delete/{id}', function(Request $request, Response
 // usuarios***************************************************************************
 //************************************************************************************
 //************************************************************************************
+$app->get('/api/User/{id}', function(Request $request, Response $response){
+    $id = $request->getAttribute('id');
+    $sql = "SELECT 
+    tb_usuario.id_usuario, 
+    tb_usuario.email,
+    tb_usuario.clave,
+    tb_usuario.nombre,
+    tb_usuario.apellido,
+    tb_usuario.rol,
+    tb_edificio.id_edificio,
+    tb_edificio.nombre as edificio,
+    tb_edificio.direccion,
+    tb_edificio.ciudad
+    FROM `tb_usuario` 
+    inner JOIN tb_edificio ON tb_usuario.id_edificio = tb_edificio.id_edificio
+    WHERE tb_usuario.id_usuario = '$id'";
+     try{
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $result = $stmt->fetch(PDO::FETCH_OBJ);
+        $db = null;
+        echo json_encode($result);
+    } catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+    }
 
+});
 $app->get('/api/SpacesOccupiedByUser/{id}', function(Request $request, Response $response){
      $dia = date("d");$mes=date("m");$anio=date("Y");
     $id = $request->getAttribute('id');
@@ -487,15 +516,16 @@ $app->get('/api/idSpaceByuser/{iduser}', function(Request $request, Response $re
         echo '{"error": {"text": '.$e->getMessage().'}';
     }
 });
+
+
+
+
 $app->get('/api/MySpacesOccupiedByUser/{idspace}', function(Request $request, Response $response){
     $dia = date("d");$mes=date("m");$anio=date("Y");
     $id = $request->getAttribute('idspace');
     $sql="SELECT tb_temp_usuario.id_usuario, CONCAT(tb_usuario.nombre, ' ',tb_usuario.apellido) as nombre FROM `tb_temp_usuario` INNER JOIN tb_usuario ON tb_temp_usuario.id_usuario = tb_usuario.id_usuario 
         WHERE `id_espacio`= '$id' AND `fecha`= '".$dia."/".$mes."/".$anio."'";
     //echo "<br>".$sql."<br>";
-
-   
-   
     try{
         // Get DB Object
         $db = new db();
@@ -509,10 +539,47 @@ $app->get('/api/MySpacesOccupiedByUser/{idspace}', function(Request $request, Re
         echo '{"error": {"text": '.$e->getMessage().'}';
     }
 });
+
+$app->get('/api/md5/{pass}', function(Request $request, Response $response){
+    $id = $request->getAttribute('pass');
+   
+        echo '{"md5":'.json_encode(md5($id)).'}';
+  
+});
+
+$app->put('/api/updatepass/{id_usuario}', function(Request $request, Response $response){
+    
+    $id_usuario = $request->getAttribute('id_usuario');
+    $clave = $request->getParam('clave');
+    $clave = md5($clave);
+
+    $sql = "UPDATE `tb_usuario` 
+    SET `clave` = :clave 
+    WHERE `tb_usuario`.`id_usuario` = '$id_usuario';";
+
+     try{
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+
+        
+        $stmt->bindParam(':clave',  $clave);
+      
+        $stmt->execute();
+        echo '{"notice": {"text": "Pass Updated"}';
+    } catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+    }
+
+}); 
+   
+
 $app->get('/api/freeSpace/{info}', function(Request $request, Response $response){
     $info = $request->getAttribute('info');
     $idespacio = "";
-    //echo $info."<br>";
+    echo $info."<br>";
 
     $anio1 = substr($info, 0,4);
     $mes = substr($info, -19,2);
@@ -574,24 +641,15 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
         $d1 = (int) $dia;
         $d2 = (int) $dia2;
         while ( $d1 <=  $d2) {
-            $sql = "INSERT INTO `tb_calendario` (`id_calendario`, `dia`, `mes`, `anio`, `horario`, `id_espacio`) VALUES 
-            (NULL, '".$d1."', '".$mes."', '".$anio."', '".$jornada."', '".$idespacio."');";
-            //echo $sql."<br>";
-
-            try{
-                // Get DB Object
-                $db = new db();
-                // Connect
-                $db = $db->connect();
-                $stmt = $db->prepare($sql);
-                $stmt->execute();
-                //echo '{"notice": {"text": "Customer Added" '.$sql.'}';
-            } catch(PDOException $e){
-                //echo '{"error": {"text": '.$e->getMessage().'}';
+            
+            $var = consultar_si_exite_calendario($d1, $mes, $anio, $idespacio);
+            //echo "entro var: ".$var;
+            if($var=="vacio"){
+                insertar_calendario($d1, $mes, $anio, $jornada, $idespacio);
             }
-                    $d1 = $d1 + 1;
+            $d1 = $d1 + 1;
         }
-    }elseif($diferenciames!=0 AND $diferenciaanio==0){//mes =! mes and anio1 0 anio1
+    }elseif($diferenciames!=0 AND $diferenciaanio==0){//mes =! mes and anio1 = anio1
         $m1 = (int) $mes;$m2 = (int) $mes2;
         $d1 = (int) $dia;$d2 = (int) $dia2;
         $diai = $d1;
@@ -599,20 +657,15 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
         while($m1<=$m2){
 
              while ( $diai <=  $diaf) {
-                $sql = "INSERT INTO `tb_calendario` (`id_calendario`, `dia`, `mes`, `anio`, `horario`, `id_espacio`) VALUES 
-                (NULL, '".$diai."', '".$m1."', '".$anio."', '".$jornada."', '".$idespacio."');";
-                ////echo $sql."<br>";
-                 try{
-                // Get DB Object
-                $db = new db();
-                // Connect
-                $db = $db->connect();
-                $stmt = $db->prepare($sql);
-                $stmt->execute();
-                //echo '{"notice": {"text": "Customer Added" '.$sql.'}';
-            } catch(PDOException $e){
-                //echo '{"error": {"text": '.$e->getMessage().'}';
-            }
+
+                $var = consultar_si_exite_calendario($diai, $m1, $anio, $idespacio);
+                //echo "entro var: ".$var;
+                if($var=="vacio"){
+                    insertar_calendario($diai, $m1, $anio, $jornada, $idespacio);
+                }
+                //$sql = "INSERT INTO `tb_calendario` (`id_calendario`, `dia`, `mes`, `anio`, `horario`, `id_espacio`) VALUES 
+                //(NULL, '".$diai."', '".$m1."', '".$anio."', '".$jornada."', '".$idespacio."');";
+               
                 $diai = $diai +1;
              }
              $diai = 1;
@@ -640,10 +693,63 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
                     if($m1<10){
                         $mess = "0".$m1;
                     }
-                    $sql = "INSERT INTO `tb_calendario` (`id_calendario`, `dia`, `mes`, `anio`, `horario`, `id_espacio`) VALUES 
-                    (NULL, '".$diaa."', '".$mess."', '".$a1."', '".$jornada."', '".$idespacio."');";
-                    //echo $sql."<br>";
-                     try{
+                    $var = consultar_si_exite_calendario($diaa, $mess, $a1, $idespacio);
+                    //echo "entro var: ".$var;
+                    if($var=="vacio"){
+                        insertar_calendario($diaa, $mess, $a1, $jornada, $idespacio);
+                    }
+                     $diai = $diai +1;
+                }
+                $diai = 1;
+                //echo $m1."<br>";
+                $m1 = $m1 +1;
+                if($m1==13){
+                        $m1 = 1;
+                        $a1 = $a1 +1;
+                }
+                $diaf = cuantodistieneelmes($m1);
+                if($m1==$m2 AND $a1==$a2 ){
+                       $diaf = $d2;
+                       $m2f = $m2;
+                }
+            }
+            $a1 = $a1 +1;
+        }
+    }
+    
+});
+
+    function consultar_si_exite_calendario($dia, $mes, $anio, $id_espacio){
+         $resultado = "vacio"; 
+         $sql="SELECT * FROM `tb_calendario` WHERE `dia`=".$dia." AND `mes` = ".$mes." AND `anio`= ".$anio." AND `id_espacio` = ".$id_espacio."";
+         //echo $sql."<br>";
+          try{
+        // Get DB Object
+            $db = new db();
+            // Connect
+            $db = $db->connect();
+            $stmt = $db->query($sql);
+            $result = $stmt->fetch(PDO::FETCH_OBJ);
+            $db = null;
+            //echo json_encode($result);
+            if($result!=null){
+                $resultado = "fecha_duplicada";
+            }else{ $resultado = "vacio";}
+            } catch(PDOException $e){
+                echo '{"error": {"text": '.$e->getMessage().'}';
+                $resultado = $e->getMessage();
+            }
+
+            return $resultado;
+    }
+
+    function insertar_calendario($dia, $mes, $anio, $jornada, $id_espacio){
+
+          $sql = "INSERT INTO `tb_calendario` (`id_calendario`, `dia`, `mes`, `anio`, `horario`, `id_espacio`) VALUES 
+            (NULL, '".$dia."', '".$mes."', '".$anio."', '".$jornada."', '".$id_espacio."');";
+            //echo $sql."<br>";
+
+            try{
                 // Get DB Object
                 $db = new db();
                 // Connect
@@ -651,29 +757,11 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
                 $stmt = $db->prepare($sql);
                 $stmt->execute();
                 //echo '{"notice": {"text": "Customer Added" '.$sql.'}';
-                } catch(PDOException $e){
-                    //echo '{"error": {"text": '.$e->getMessage().'}';
-                }
-                        $diai = $diai +1;
-                }
-                     $diai = 1;
-                     //echo $m1."<br>";
-                     $m1 = $m1 +1;
-                     if($m1==13){
-                        $m1 = 1;
-                        $a1 = $a1 +1;
-                    }
-                     $diaf = cuantodistieneelmes($m1);
-                     if($m1==$m2 AND $a1==$a2 ){
-                       $diaf = $d2;
-                       $m2f = $m2;
-                     }
+            } catch(PDOException $e){
+                //echo '{"error": {"text": '.$e->getMessage().'}';
             }
-            $a1 = $a1 +1;
-        }
+
     }
-    
-});
 
    function cuantodistieneelmes($mes)
     {
