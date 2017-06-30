@@ -737,7 +737,12 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
     }
 
     function insertar_calendario($dia, $mes, $anio, $jornada, $id_espacio){
-
+             if($dia<10){
+                        $dia = "0". $dia;
+                    }
+                    if($mes<10){
+                        $mes = "0".$mes;
+                    }
           $sql = "INSERT INTO `tb_calendario` (`id_calendario`, `dia`, `mes`, `anio`, `horario`, `id_espacio`) VALUES 
             (NULL, '".$dia."', '".$mes."', '".$anio."', '".$jornada."', '".$id_espacio."');";
             //echo $sql."<br>";
