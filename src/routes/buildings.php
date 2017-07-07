@@ -474,6 +474,32 @@ $app->get('/api/daysFreeByUser/{id}', function(Request $request, Response $respo
     }
 });
 
+$app->get('/api/SpaceOccupiedForMe/{id}', function(Request $request, Response $response){//que espacio esta ocupando un usuario
+    $dia = date("d");$mes=date("m");$anio=date("Y");
+    $id = $request->getAttribute('id');
+    //echo $email;
+    //echo $clave;
+    $sql="SELECT * FROM `tb_temp_usuario`
+    INNER JOIN tb_espacio ON tb_temp_usuario.id_espacio = tb_espacio.id_espacio
+    WHERE tb_temp_usuario.id_usuario = '$id' AND fecha = '".$dia."/".$mes."/".$anio."'";
+  
+    //echo "<br>".$sql."<br>";
+    try{
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $result = $stmt->fetch(PDO::FETCH_OBJ);
+        $db = null;
+        echo json_encode($result);
+    } catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+    }
+});
+
+
+
 $app->delete('/api/FreeDayByUser/delete/{id}', function(Request $request, Response $response){
     $id = $request->getAttribute('id');
     $sql = "DELETE FROM `tb_calendario` WHERE `tb_calendario`.`id_calendario` = '$id'";
