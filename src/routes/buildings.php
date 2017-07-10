@@ -93,6 +93,7 @@ $app->get('/api/blockByBuilding/{id}', function(Request $request, Response $resp
             FROM bd_park.spacelibres WHERE idbloque = id_bloque
             AND dia=".date('d')." AND mes = ".date('m')." AND anio = ".date('Y').") AS numfreeblock 
             FROM tb_bloque WHERE id_edificio =  $id AND estado=1";
+            echo $sql;
     try{
         // Get DB Object
         $db = new db();
