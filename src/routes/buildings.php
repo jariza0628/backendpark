@@ -336,26 +336,35 @@ $app->get('/api/SpacesWhithCalendarFree/{id}', function(Request $request, Respon
 
 $app->post('/api/save/space', function(Request $request, Response $response){
     $id_espacio = $request->getParam('id');;
-    $id_usuario = $request->getParam('iduser');;
+    $id_usuario = $request->getParam('iduser');
 
-    $sql="INSERT INTO `tb_temp_usuario` (`id_temp`, `fecha`, `estado`, `id_usuario`, `id_espacio`)
-          VALUES (NULL, '".date("d/m/Y")."', '1', :id_usuario, :id_espacio);";
-    
-   
-    try{
-        // Get DB Object
-        $db = new db();
-        // Connect
-        $db = $db->connect();
-        $stmt = $db->prepare($sql);
-        $stmt->bindParam(':id_espacio', $id_espacio);
-        $stmt->bindParam(':id_usuario',  $id_usuario);
+    //verficar si esta usado
+    $validacion = consultar_si_exite_tb_temp_usuario($id_espacio);
+    if($validacion=="vacio"){
         
-        $stmt->execute();
-        echo '{"notice": {"text": "Customer Added" '.$sql.'- esp: '.$id_espacio.'}';
-    } catch(PDOException $e){
-        echo '{"error": {"text": '.$e->getMessage().'}';
+        $sql="INSERT INTO `tb_temp_usuario` (`id_temp`, `fecha`, `estado`, `id_usuario`, `id_espacio`)
+              VALUES (NULL, '".date("d/m/Y")."', '1', :id_usuario, :id_espacio);";
+        
+       
+        try{
+            // Get DB Object
+            $db = new db();
+            // Connect
+            $db = $db->connect();
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':id_espacio', $id_espacio);
+            $stmt->bindParam(':id_usuario',  $id_usuario);
+            
+            $stmt->execute();
+            echo '{"notice": {"text": "Customer Added" '.$sql.'- esp: '.$id_espacio.'}';
+        } catch(PDOException $e){
+            echo '{"error": {"text": '.$e->getMessage().'}';
+        }
+        
+    }else{
+        echo '{"notice": {"text": "Espacio ocupado "'.$id_espacio.'}';
     }
+    
 });
 
 // Delete desbloquear spacio
@@ -761,6 +770,30 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
                 $resultado = $e->getMessage();
             }
 
+            return $resultado;
+    }
+     function consultar_si_exite_tb_temp_usuario($id_espacio){//validar si ya se esta usando el parquedero evistar duplicidad
+         
+         $resultado = ""; 
+         $sql="SELECT * FROM `tb_temp_usuario` WHERE `id_espacio`= ".$id_espacio."";
+         //echo $sql."<br>";
+          try{
+        // Get DB Object
+            $db = new db();
+            // Connect
+            $db = $db->connect();
+            $stmt = $db->query($sql);
+            $result = $stmt->fetch(PDO::FETCH_OBJ);
+            $db = null;
+            //echo json_encode($result);
+            if($result!=null){
+                $resultado = "ocupado";
+            }else{ $resultado = "vacio";}
+            } catch(PDOException $e){
+                echo '{"error": {"text": '.$e->getMessage().'}';
+                $resultado = $e->getMessage();
+            }
+            echo $resultado;
             return $resultado;
     }
 
