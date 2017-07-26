@@ -305,14 +305,15 @@ $app->get('/api/SpacesByBuilding/{id}', function(Request $request, Response $res
 //TRAER ESPACIO LIBRE CON SU CALENDARIO DISPONIBLE DE "HOY"
 $app->get('/api/SpacesWhithCalendarFree/{id}', function(Request $request, Response $response){
     $id = $request->getAttribute('id');
-    $sql = "SELECT tb_calendario.id_calendario, tb_calendario.horario, tb_espacio.id_espacio, tb_espacio.numero,
-            tb_piso.numero AS piso, tb_bloque.numero as bloque 
-            FROM tb_calendario 
-            INNER JOIN tb_espacio ON tb_calendario.id_espacio  = tb_espacio.id_espacio  
-            INNER JOIN tb_piso ON tb_espacio.id_piso = tb_piso.id_piso 
-            INNER JOIN tb_bloque ON tb_bloque.id_bloque = tb_piso.id_bloque 
-            WHERE tb_espacio.id_espacio='$id'
-           ";
+     $dia = date("d");$mes=date("m");$anio=date("Y");
+    $sql ="SELECT tb_calendario.id_calendario, tb_calendario.horario, tb_espacio.id_espacio, tb_espacio.numero, tb_piso.numero AS piso, tb_bloque.numero as bloque 
+    FROM tb_calendario 
+    INNER JOIN tb_espacio ON tb_calendario.id_espacio = tb_espacio.id_espacio 
+    INNER JOIN tb_piso ON tb_espacio.id_piso = tb_piso.id_piso 
+    INNER JOIN tb_bloque ON tb_bloque.id_bloque = tb_piso.id_bloque 
+    WHERE tb_espacio.id_espacio='$id'
+    and tb_calendario.dia = '$dia' and tb_calendario.mes = '$mes' and tb_calendario.anio = '$anio'";
+    //echo $sql;
      try{
         // Get DB Object
         $db = new db();
