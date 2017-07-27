@@ -463,13 +463,15 @@ $app->get('/api/log/{data}/{data2}', function(Request $request, Response $respon
 });
 $app->get('/api/daysFreeByUser/{id}', function(Request $request, Response $response){
     $id = $request->getAttribute('id');
+    $dia = date("d");$mes=date("m");$anio=date("Y");
     //echo $email;
     //echo $clave;
    $sql = "SELECT tb_calendario.`id_calendario`, tb_calendario.`dia`, tb_calendario.`mes`, tb_calendario.`anio`, 
         tb_calendario.`horario`,tb_espacio.`numero`, tb_espacio.`estado` 
         FROM `tb_usuario` INNER JOIN tb_espacio ON tb_usuario.id_usuario = tb_espacio.id_usuario 
         INNER JOIN tb_calendario oN tb_espacio.id_espacio = tb_calendario.id_espacio 
-        WHERE tb_usuario.id_usuario = '$id' AND tb_usuario.id_edificio = 1";
+        WHERE tb_usuario.id_usuario = '$id' AND tb_usuario.id_edificio = 1
+        AND tb_calendario.dia >= '$dia' AND tb_calendario.mes >= '$mes' AND tb_calendario.anio = '$anio'";
     //echo "<br>".$sql."<br>";
     try{
         // Get DB Object
