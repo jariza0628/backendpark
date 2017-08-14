@@ -357,7 +357,7 @@ $app->post('/api/save/space', function(Request $request, Response $response){
             $stmt->bindParam(':id_usuario',  $id_usuario);
             
             $stmt->execute();
-            echo '{"notice": {"text": "Customer Added" '.$sql.'- esp: '.$id_espacio.'}';
+            echo '["{"notice":"Customer Added"}]';
         } catch(PDOException $e){
             echo '{"error": {"text": '.$e->getMessage().'}';
         }
