@@ -8,6 +8,13 @@ $app = new \Slim\App;
 $app->get('/hello/{name}', function (Request $request, Response $response) {     
 $name = $request->getAttribute('name');     
 $response->getBody()->write("Hello, $name");      
-return $response; });
+return $response; 
+});
+
+$app->get('/c', function (Request $request, Response $response) {     
+  $response->getBody()->write("Hello, $name");      
+return $response; 
+});
+
 require '../src/routes/buildings.php'; 
 $app->run();
