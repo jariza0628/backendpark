@@ -31,7 +31,44 @@ $app->get('/api/buildings', function(Request $request, Response $response){
         echo '{"error": {"text": '.$e->getMessage().'}';
     }
 });
-
+$app->get('/', function(Request $request, Response $response){
+    
+    try{
+        // Get DB Object
+            echo'
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body style="background-image: url(../../views/asset/img/background.jpg);background-size:cover">
+   <div style="padding: 5px; font-family: helvetica;">
+      <div style="width: 100%;text-align: center;padding-top: 100px;padding-bottom: 30px !important;">
+        <img src="/views/asset/img/logo_tran.jpg" style="border-radius: 50px;">
+      </div>
+      <div style="float: left;text-align: center;min-width: 49%;">
+        <a href="../../views/login/login.php">
+            <img src="../../views/asset/img/icon-free.png" width="300px" height="250px"><br>
+            <span>Panel</span>
+        </a>
+      </div>
+      <div style="float: right;text-align: center;min-width: 49%;">
+        <a href="#">
+            <img src="../../views/asset/img/icon-silla.png" width="260px" height="250px"><br>
+            <span>Panel</span>
+        </a>
+      </div>
+    
+   </div>
+</body>
+</html>
+</html>
+               
+            ';
+    } catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+    }
+});
 
 // Get Single buildings
 $app->get('/api/building/{id}', function(Request $request, Response $response){
@@ -357,7 +394,7 @@ $app->post('/api/save/space', function(Request $request, Response $response){
             $stmt->bindParam(':id_usuario',  $id_usuario);
             
             $stmt->execute();
-            echo '{"notice": {"text": "Customer Added" '.$sql.'- esp: '.$id_espacio.'}';
+            echo '["{"notice":"Customer Added"}]';
         } catch(PDOException $e){
             echo '{"error": {"text": '.$e->getMessage().'}';
         }
