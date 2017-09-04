@@ -41,20 +41,20 @@ $app->get('/', function(Request $request, Response $response){
 <head>
     <title></title>
 </head>
-<body style="background-image: url(/views/asset/img/background.jpg);background-size:cover">
+<body style="background-image: url(../../views/asset/img/background.jpg);background-size:cover">
    <div style="padding: 5px; font-family: helvetica;">
       <div style="width: 100%;text-align: center;padding-top: 100px;padding-bottom: 30px !important;">
         <img src="/views/asset/img/logo_tran.jpg" style="border-radius: 50px;">
       </div>
       <div style="float: left;text-align: center;min-width: 49%;">
-        <a href="http://slimapp/views/login/login.php">
-            <img src="/views/asset/img/icon-free.png" width="300px" height="250px"><br>
+        <a href="../../views/login/login.php">
+            <img src="../../views/asset/img/icon-free.png" width="300px" height="250px"><br>
             <span>Panel</span>
         </a>
       </div>
       <div style="float: right;text-align: center;min-width: 49%;">
-        <a href="http://slimapp/views/login/login.php">
-            <img src="/views/asset/img/icon-silla.png" width="260px" height="250px"><br>
+        <a href="#">
+            <img src="../../views/asset/img/icon-silla.png" width="260px" height="250px"><br>
             <span>Panel</span>
         </a>
       </div>
