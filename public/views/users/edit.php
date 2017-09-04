@@ -22,6 +22,46 @@ echo "Su sesion a terminado,
 <a href='../login/login.php'>Necesita Hacer Login</a>";
 exit;
 }
+$nombre = "";
+$apellido = "";
+$rol = "";
+$user = "";
+$name_rol = "";
+if(isset($_GET['id'])){
+	$sql = 'SELECT u.id_usuario,u.nombre, u.apellido, u.rol,  u.email
+			FROM `tb_usuario` u
+			WHERE u.estado = 1 and u.id_usuario='.$_GET['id'].'';
+			
+	$result = $conn->query($sql);
+
+	if ($result->num_rows > 0) {
+	    // output data of each row
+	    while($row = $result->fetch_assoc()) {
+	        $nombre = $row['nombre'];
+	        $apellido = $row['apellido'];
+
+	        //roles 1 = administrador, 2 = usuario con espacio, 3 usuario sin espacio, 4 usuario con espacio conpartido
+	        $rol = $row['rol'];
+	        if($rol == 2){
+	        	$name_rol = "Usuario con espacio";
+	        }
+	        if($rol == 3){
+	        	$name_rol = "Usuario sin espacio";
+	        }
+	        if($rol == 4){
+	        	$name_rol = "Usuario con espacio compartido";
+	        }
+	        
+
+	        $user = $row['email'];
+	    }
+	} else {
+	    echo "0 results";
+	}
+}
+
+
+
 ?>
 <!DOCTYPE html>
 <!-- saved from url=(0053)https://getbootstrap.com/docs/3.3/examples/dashboard/ -->
@@ -114,53 +154,86 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
           ?>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">Bloques</h1>
-          <h2 class="sub-header">Lista de Bloques</h2>
-          <div class="table-responsive">
+          <h1 class="page-header">Editar Usuario</h1>
 
-          	<?php
-          	$sql = 'SELECT * FROM `tb_bloque`';
-			
-          	?>
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Nombre</th>
-                  <th>Estado</th>
-                  <th>Edificio</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-              <?php
-              $result = $conn->query($sql);
+          
 
-					if ($result->num_rows > 0) {
-					    // output data of each row
-					    while($row = $result->fetch_assoc()) {
-					     ?>
-					      
-					      <tr>
-			                  <td><?php echo $row["id_bloque"] ?></td>
-			                  <td><?php echo $row["numero"] ?></td>
-			                  <td><?php echo "Activo"?></td>
-			                  <td><?php echo "Transelca" ?></td>
-			                  
-			                  <td><a href="#">Editar</a> <a href="#">Eliminar</a></td>
-			              </tr>
+          <h2 class="sub-header">Usuario: <?php echo $user ?></h2>
+         		<?php 
+         		if($nombre !="" && $apellido != "" && $rol !="" && $user != ""){
 
-					     <?php
-					    }
-					} else {
-					    echo "0 results";
-					}
-			?>
-               
-              
-              </tbody>
-            </table>
-          </div>
+
+         		?>
+          		<form class="form-horizontal" action="save_edit.php" method="POST">
+          		<input type="text" class="form-control" name="id"   value="<?php echo $_GET['id'] ?>" style="visibility: hidden;">
+				  <div class="form-group">
+				    <label for="inputEmail3" class="col-sm-2 control-label">Usuario</label>
+				    <div class="col-sm-10">
+				      
+				      <input type="text" class="form-control" name="user" id="" placeholder="Usuario" value="<?php echo $user ?>" required>
+				    </div>
+				  </div>
+				   <div class="form-group">
+				    <label for="inputEmail3" class="col-sm-2 control-label">Nombre</label>
+				    <div class="col-sm-10">
+				      <input type="text" class="form-control" name="nombre" id="" placeholder="Jeff" value="<?php echo $nombre ?>" required>
+				    </div>
+				  </div>
+				  <div class="form-group">
+				    <label for="inputEmail3" class="col-sm-2 control-label">Apellido</label>
+				    <div class="col-sm-10">
+				      <input type="text" class="form-control" name="apellido" id="" placeholder="Ariz" value="<?php echo $apellido ?>" required>
+				    </div>
+				  </div>
+				  <div class="form-group">
+				    <label for="inputEmail3" class="col-sm-2 control-label">Rol</label>
+				    <div class="col-sm-10">
+				      <select class="form-control" name="rol">
+						  <option value="<?php echo $rol ?>"><?php echo $name_rol ?></option>
+						  <option value="2">Usuario con espacio</option>
+						  <option value="3">Usuario Sin espacio</option>
+						  <option value="4">Usuario con espacio compartido</option>
+						</select>
+				    </div>
+				  </div>
+				  <div class="form-group">
+				    <div class="col-sm-offset-2 col-sm-10">
+				      <div class="checkbox">
+				        <label>
+				          <input type="checkbox" id="check" name="check" onchange="javascript:showContent()"> Cambiar contraseña
+				        </label>
+				      </div>
+				    </div>
+				  </div>
+				  <div id="pass" style="display: none">
+				  <div class="form-group">
+				    <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
+				    <div class="col-sm-10">
+				      <input type="password" class="form-control" name="pass1" id="inputPassword3" placeholder="Password">
+				    </div>
+				  </div>
+				   <div class="form-group">
+				    <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
+				    <div class="col-sm-10">
+				      <input type="password" class="form-control" name="pass2" id="inputPassword3" placeholder="Password">
+				    </div>
+				  </div>
+				 </div>
+				 
+				  <div class="form-group">
+				    <div class="col-sm-offset-2 col-sm-10">
+				      <button type="submit" class="btn btn-default">Guardar</button>
+				    </div>
+				  </div>
+				</form>
+          		<?php 
+          		}else{
+          			?>
+          			<p>Error al cargar los datos del usuario, contacte al administrador.</p>
+          			<?php
+          		}
+
+          		?>
         </div>
       </div>
     </div>
@@ -208,6 +281,18 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/javascript">
+    function showContent() {
+        element = document.getElementById("pass");
+        check = document.getElementById("check");
+        if (check.checked) {
+            element.style.display='block';
+        }
+        else {
+            element.style.display='none';
+        }
+    }
+	</script>
     <script src="../asset/js/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="../../../assets/js/vendor/jquery.min.js"><\/script>')</script>
     <script src="../asset/js/bootstrap.min.js"></script>

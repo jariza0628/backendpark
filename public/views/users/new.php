@@ -22,6 +22,8 @@ echo "Su sesion a terminado,
 <a href='../login/login.php'>Necesita Hacer Login</a>";
 exit;
 }
+
+
 ?>
 <!DOCTYPE html>
 <!-- saved from url=(0053)https://getbootstrap.com/docs/3.3/examples/dashboard/ -->
@@ -114,53 +116,109 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
           ?>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">Bloques</h1>
-          <h2 class="sub-header">Lista de Bloques</h2>
-          <div class="table-responsive">
+          <h1 class="page-header">Nuevo Usuario</h1>
+          		<form class="form-horizontal" action="save_new.php" method="POST">
+          		<input type="text" class="form-control" name="id"   value="<?php echo $_GET['id'] ?>" style="visibility: hidden;" >
+				  <div class="form-group">
+				    <label for="inputEmail3" class="col-sm-2 control-label">Usuario</label>
+				    <div class="col-sm-10">
+				      
+				      <input type="text" class="form-control" name="user" id="" placeholder="Usuario"  required>
+				    </div>
+				  </div>
+				   <div class="form-group">
+				    <label for="inputEmail3" class="col-sm-2 control-label">Nombre</label>
+				    <div class="col-sm-10">
+				      <input type="text" class="form-control" name="nombre" id="" placeholder="Jeff" required>
+				    </div>
+				  </div>
+				  <div class="form-group">
+				    <label for="inputEmail3" class="col-sm-2 control-label">Apellido</label>
+				    <div class="col-sm-10">
+				      <input type="text" class="form-control" name="apellido" id="" placeholder="Ariza" required>
+				    </div>
+				  </div>
+				  <div class="form-group">
+				    <label for="inputEmail3" class="col-sm-2 control-label">Rol</label>
+				    <div class="col-sm-10">
+				      <select class="form-control" name="rol" id="selecte" onchange="javascript:showConespacio()">
+				      	  <option value="3">Usuario Sin espacio</option>
+						  <option value="2">Usuario con espacio</option>
+						  <option value="4">Usuario con espacio compartido</option>
+						</select>
+				    </div>
+				  </div>
+				  <div class="form-group">
+				    <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
+				    <div class="col-sm-10">
+				      <input type="password" class="form-control" name="pass1" id="inputPassword3" placeholder="Password" required>
+				    </div>
+				  </div>
+				   <div class="form-group">
+				    <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
+				    <div class="col-sm-10">
+				      <input type="password" class="form-control" name="pass2" id="inputPassword3" placeholder="Password" required>
+				    </div>
+				  </div>
+				 <div class="form-group"  id="spaces" style="display: none">
+				    <label for="inputEmail3" class="col-sm-2 control-label">Estacionamientos Libres</label>
+				    <div class="col-sm-10">
+				      <select class="form-control" name="space_free">
+				      	  <?php
+				      	  	$sql="SELECT * FROM `tb_espacio` WHERE `estado`=3";
+				      	  	$result = $conn->query($sql);
 
-          	<?php
-          	$sql = 'SELECT * FROM `tb_bloque`';
-			
-          	?>
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Nombre</th>
-                  <th>Estado</th>
-                  <th>Edificio</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-              <?php
-              $result = $conn->query($sql);
+							if ($result->num_rows > 0) {
+							    // output data of each row
+							    while($row = $result->fetch_assoc()) {
+							         if(strlen($row['numero'])==3){
+							        ?>
+							         <option value="<?php echo $row['id_espacio'] ?>"><?php echo $row['numero'] ?></option>
+							        <?php
+							    	}
+							    }
+							} else {
+							    echo "0 results";
+							}
+				      	  ?>
+				      	 
+					
+						</select>
+				    </div>
+				  </div>
+				  <div class="form-group"  id="spaces_com" style="display: none">
+				    <label for="inputEmail3" class="col-sm-2 control-label">Estacionamientos Libres compartidos</label>
+				    <div class="col-sm-10">
+				      <select class="form-control" name="space_free_com">
+				      	  <?php
+				      	  	$sql="SELECT * FROM `tb_espacio` WHERE `estado`=3";
+				      	  	$result = $conn->query($sql);
 
-					if ($result->num_rows > 0) {
-					    // output data of each row
-					    while($row = $result->fetch_assoc()) {
-					     ?>
-					      
-					      <tr>
-			                  <td><?php echo $row["id_bloque"] ?></td>
-			                  <td><?php echo $row["numero"] ?></td>
-			                  <td><?php echo "Activo"?></td>
-			                  <td><?php echo "Transelca" ?></td>
-			                  
-			                  <td><a href="#">Editar</a> <a href="#">Eliminar</a></td>
-			              </tr>
-
-					     <?php
-					    }
-					} else {
-					    echo "0 results";
-					}
-			?>
-               
-              
-              </tbody>
-            </table>
-          </div>
+							if ($result->num_rows > 0) {
+							    // output data of each row
+							    while($row = $result->fetch_assoc()) {
+							        if(strlen($row['numero'])==4){
+							        ?>
+							         <option value="<?php echo $row['id_espacio'] ?>"><?php echo $row['numero'] ?></option>
+							        <?php
+							    	}
+							    }
+							} else {
+							    echo "0 results";
+							}
+				      	  ?>
+				      	 
+					
+						</select>
+				    </div>
+				  </div>
+				 
+				  <div class="form-group">
+				    <div class="col-sm-offset-2 col-sm-10">
+				      <button type="submit" class="btn btn-default">Guardar</button>
+				    </div>
+				  </div>
+				</form>
         </div>
       </div>
     </div>
@@ -208,6 +266,26 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
+   <script type="text/javascript">
+    function showConespacio() {
+        element = document.getElementById("spaces");
+        element2 = document.getElementById("spaces_com");
+        selecte = document.getElementById("selecte");
+        if (selecte.value == 2) {
+            element.style.display='block';
+        }
+        else {
+            element.style.display='none';
+        }
+        if (selecte.value == 4) {
+            element2.style.display='block';
+        }
+        else {
+            element2.style.display='none';
+        }
+    }
+   
+    </script>
     <script src="../asset/js/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="../../../assets/js/vendor/jquery.min.js"><\/script>')</script>
     <script src="../asset/js/bootstrap.min.js"></script>

@@ -114,53 +114,57 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
           ?>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">Bloques</h1>
-          <h2 class="sub-header">Lista de Bloques</h2>
-          <div class="table-responsive">
 
-          	<?php
-          	$sql = 'SELECT * FROM `tb_bloque`';
-			
-          	?>
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Nombre</th>
-                  <th>Estado</th>
-                  <th>Edificio</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-              <?php
-              $result = $conn->query($sql);
+          <h1 class="page-header">Reportes</h1>
 
-					if ($result->num_rows > 0) {
-					    // output data of each row
-					    while($row = $result->fetch_assoc()) {
-					     ?>
-					      
-					      <tr>
-			                  <td><?php echo $row["id_bloque"] ?></td>
-			                  <td><?php echo $row["numero"] ?></td>
-			                  <td><?php echo "Activo"?></td>
-			                  <td><?php echo "Transelca" ?></td>
-			                  
-			                  <td><a href="#">Editar</a> <a href="#">Eliminar</a></td>
-			              </tr>
-
-					     <?php
-					    }
-					} else {
-					    echo "0 results";
-					}
-			?>
-               
-              
-              </tbody>
-            </table>
+          <div class="row placeholders">
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <a href="historial.php">
+              <img src="../asset/img/op.jpg" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Reporte</h4>
+              <span class="text-muted">Historial de Uso</span>
+              </a>
+            </div>
+            <div class="col-xs-6 col-sm-3 placeholder">
+            <a href="libreshoy.php">
+              <img src="../asset/img/op.jpg" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Reporte</h4>
+              <span class="text-muted">Espacios libres hoy</span>
+              </a>
+            </div>
+             <div class="col-xs-6 col-sm-3 placeholder">
+            <a href="vecesutilizadosporusuarios.php">
+              <img src="../asset/img/op.jpg" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Reporte</h4>
+              <span class="text-muted">Numero de veces utilizado por usuario</span>
+              </a>
+            </div>
+           
+            <div class="col-xs-6 col-sm-3 placeholder">
+            <a href="historial_calendario.php">
+              <img src="../asset/img/op.jpg" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Reporte</h4>
+              <span class="text-muted">Historial de fechas liberadas</span>
+              </a>
+            </div>
           </div>
+           <div class="row placeholders">
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <a href="numerovecesliberadoporusuario.php">
+              <img src="../asset/img/op.jpg" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Reporte</h4>
+              <span class="text-muted">Numero de veces liberado por usuarios</span>
+              </a>
+            </div>
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <a href="quienusahoy.php">
+              <img src="../asset/img/op.jpg" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Reporte</h4>
+              <span class="text-muted">Usuarios de espacios de hoy</span>
+              </a>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

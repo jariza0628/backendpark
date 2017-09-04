@@ -114,21 +114,26 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
           ?>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">Bloques</h1>
-          <h2 class="sub-header">Lista de Bloques</h2>
+          <h1 class="page-header">Estacionamientos</h1>
+
+          
+
+          <h2 class="sub-header">Lista de espacios</h2>
+          <a href="new.php" class="btn btn-danger">Nuevo Espacio</a>
+       
           <div class="table-responsive">
 
           	<?php
-          	$sql = 'SELECT * FROM `tb_bloque`';
+          	$sql = 'SELECT tb_espacio.`id_espacio`, tb_espacio.`numero`, tb_espacio.`estado`, tb_espacio.`id_usuario`, tb_piso.numero as piso FROM `tb_espacio`, tb_piso WHERE tb_espacio.id_piso = tb_piso.id_piso ORDER BY `tb_espacio`.`numero` ASC';
 			
           	?>
             <table class="table table-hover">
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Nombre</th>
+                  <th># Estacionamiento</th>
                   <th>Estado</th>
-                  <th>Edificio</th>
+                  <th># Piso</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -139,15 +144,25 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 					if ($result->num_rows > 0) {
 					    // output data of each row
 					    while($row = $result->fetch_assoc()) {
+					    	$estado = "";
+					    	if($row["estado"]==1){
+					    		$estado ="Activo";
+					    	}
+					    	if($row["estado"]==2){
+					    		$estado ="Eliminado";
+					    	}
+					    	if($row["estado"]==3){
+					    		$estado ="Libre";
+					    	}
 					     ?>
 					      
 					      <tr>
-			                  <td><?php echo $row["id_bloque"] ?></td>
+			                  <td><?php echo $row["id_espacio"] ?></td>
 			                  <td><?php echo $row["numero"] ?></td>
-			                  <td><?php echo "Activo"?></td>
-			                  <td><?php echo "Transelca" ?></td>
+			                  <td><?php echo $estado ?></td>
+			                  <td><?php echo $row["piso"] ?></td>
 			                  
-			                  <td><a href="#">Editar</a> <a href="#">Eliminar</a></td>
+			                  <td><a href="#>">Editar</a> <a href="#">Eliminar</a></td>
 			              </tr>
 
 					     <?php

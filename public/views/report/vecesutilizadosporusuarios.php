@@ -114,22 +114,29 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
           ?>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">Bloques</h1>
-          <h2 class="sub-header">Lista de Bloques</h2>
+          <h1 class="page-header">Reportes</h1>
+
+          
+
+          <h2 class="sub-header">Listado de usuarios que mas han utilizado espacios</h2>
+          
+       
           <div class="table-responsive">
 
           	<?php
-          	$sql = 'SELECT * FROM `tb_bloque`';
+            date_default_timezone_set('America/Bogota');
+          	$dia = date("d");$mes=date("m");$anio=date("Y");
+            $sql = "SELECT count(*) as total, CONCAT(u.nombre,' ', u.apellido) as nombre FROM `tb_temp_usuario_logs` log, tb_usuario u WHERE log.id_usuario = u.id_usuario GROUP by log.id_usuario ORDER BY total DESC";
+        
 			
           	?>
             <table class="table table-hover">
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>Nombre</th>
-                  <th>Estado</th>
-                  <th>Edificio</th>
-                  <th>Acciones</th>
+                  <th># Numero de Veces</th>
+                  <th>Nombre de Usuario</th>
+                  
+                  
                 </tr>
               </thead>
               <tbody>
@@ -139,15 +146,16 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 					if ($result->num_rows > 0) {
 					    // output data of each row
 					    while($row = $result->fetch_assoc()) {
+					    	
 					     ?>
 					      
 					      <tr>
-			                  <td><?php echo $row["id_bloque"] ?></td>
-			                  <td><?php echo $row["numero"] ?></td>
-			                  <td><?php echo "Activo"?></td>
-			                  <td><?php echo "Transelca" ?></td>
+			                  <td><?php echo $row["total"] ?></td>
+			                  <td><?php echo $row["nombre"] ?></td>
+			                
 			                  
-			                  <td><a href="#">Editar</a> <a href="#">Eliminar</a></td>
+			                  
+			                 
 			              </tr>
 
 					     <?php

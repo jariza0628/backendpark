@@ -118,152 +118,110 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 
           <div class="row placeholders">
             <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Label</h4>
-              <span class="text-muted">Something else</span>
+              <a href="report/historial.php">
+              <img src="asset/img/op.jpg" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Reporte</h4>
+              <span class="text-muted">Historial de Uso</span>
+              </a>
             </div>
             <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Label</h4>
-              <span class="text-muted">Something else</span>
+            <a href="report/libreshoy.php">
+              <img src="asset/img/op.jpg" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Reporte</h4>
+              <span class="text-muted">Espacios libres hoy</span>
+              </a>
             </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Label</h4>
-              <span class="text-muted">Something else</span>
+             <div class="col-xs-6 col-sm-3 placeholder">
+            <a href="report/vecesutilizadosporusuarios.php">
+              <img src="asset/img/op.jpg" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Reporte</h4>
+              <span class="text-muted">Numero de veces utilizado por usuario</span>
+              </a>
             </div>
+           
             <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Label</h4>
-              <span class="text-muted">Something else</span>
+            <a href="report/historial_calendario.php">
+              <img src="asset/img/op.jpg" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Reporte</h4>
+              <span class="text-muted">Historial de fechas liberadas</span>
+              </a>
             </div>
           </div>
 
-          <h2 class="sub-header">Section title</h2>
-          <div class="table-responsive">
-            <table class="table table-striped">
+          <h2 class="sub-header">Espacios Disponibles para hoy</h2>
+                   <div class="table-responsive">
+
+            <?php
+            date_default_timezone_set('America/Bogota');
+            $dia = date("d");$mes=date("m");$anio=date("Y");
+            $sql = " SELECT 
+        `tb_espacio`.`id_espacio` AS `espacioid`,
+        `tb_espacio`.`numero` AS `nombre`,
+        `tb_espacio`.`id_piso` AS `idpiso`,
+        `tb_bloque`.`id_bloque` AS `idbloque`,
+        `tb_piso`.`numero` AS `nombrepiso`,
+        `tb_calendario`.`dia` AS `dia`,
+        `tb_calendario`.`mes` AS `mes`,
+        `tb_calendario`.`anio` AS `anio`,
+        `tb_calendario`.`horario` AS `hora`,
+        `tb_edificio`.`id_edificio` AS `idedificio`
+    FROM
+        ((((`tb_calendario`
+        JOIN `tb_espacio` ON ((`tb_calendario`.`id_espacio` = `tb_espacio`.`id_espacio`)))
+        JOIN `tb_piso` ON ((`tb_piso`.`id_piso` = `tb_espacio`.`id_piso`)))
+        JOIN `tb_bloque` ON ((`tb_bloque`.`id_bloque` = `tb_piso`.`id_bloque`)))
+        JOIN `tb_edificio` ON ((`tb_edificio`.`id_edificio` = `tb_bloque`.`id_edificio`)))
+    WHERE
+        ((NOT (`tb_espacio`.`id_espacio` IN (SELECT 
+                `tb_temp_usuario`.`id_espacio`
+            FROM
+                `tb_temp_usuario` WHERE fecha = '".$dia."/".$mes."/".$anio."')))
+            AND (`tb_espacio`.`estado` = 1))
+    AND  dia = '".$dia."' AND mes = '".$mes."' AND anio = '".$anio."'
+            ORDER BY hora
+            
+            ";
+        
+      
+            ?>
+            <table class="table table-hover">
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>Header</th>
-                  <th>Header</th>
-                  <th>Header</th>
-                  <th>Header</th>
+                  <th># Espacio</th>
+                  <th>Piso</th>
+                  <th>Fecha</th>
+                  <th>Detalle</th>
+                  
                 </tr>
               </thead>
               <tbody>
+              <?php
+              $result = $conn->query($sql);
+
+          if ($result->num_rows > 0) {
+              // output data of each row
+              while($row = $result->fetch_assoc()) {
+                
+               ?>
+                
                 <tr>
-                  <td>1,001</td>
-                  <td>Lorem</td>
-                  <td>ipsum</td>
-                  <td>dolor</td>
-                  <td>sit</td>
-                </tr>
-                <tr>
-                  <td>1,002</td>
-                  <td>amet</td>
-                  <td>consectetur</td>
-                  <td>adipiscing</td>
-                  <td>elit</td>
-                </tr>
-                <tr>
-                  <td>1,003</td>
-                  <td>Integer</td>
-                  <td>nec</td>
-                  <td>odio</td>
-                  <td>Praesent</td>
-                </tr>
-                <tr>
-                  <td>1,003</td>
-                  <td>libero</td>
-                  <td>Sed</td>
-                  <td>cursus</td>
-                  <td>ante</td>
-                </tr>
-                <tr>
-                  <td>1,004</td>
-                  <td>dapibus</td>
-                  <td>diam</td>
-                  <td>Sed</td>
-                  <td>nisi</td>
-                </tr>
-                <tr>
-                  <td>1,005</td>
-                  <td>Nulla</td>
-                  <td>quis</td>
-                  <td>sem</td>
-                  <td>at</td>
-                </tr>
-                <tr>
-                  <td>1,006</td>
-                  <td>nibh</td>
-                  <td>elementum</td>
-                  <td>imperdiet</td>
-                  <td>Duis</td>
-                </tr>
-                <tr>
-                  <td>1,007</td>
-                  <td>sagittis</td>
-                  <td>ipsum</td>
-                  <td>Praesent</td>
-                  <td>mauris</td>
-                </tr>
-                <tr>
-                  <td>1,008</td>
-                  <td>Fusce</td>
-                  <td>nec</td>
-                  <td>tellus</td>
-                  <td>sed</td>
-                </tr>
-                <tr>
-                  <td>1,009</td>
-                  <td>augue</td>
-                  <td>semper</td>
-                  <td>porta</td>
-                  <td>Mauris</td>
-                </tr>
-                <tr>
-                  <td>1,010</td>
-                  <td>massa</td>
-                  <td>Vestibulum</td>
-                  <td>lacinia</td>
-                  <td>arcu</td>
-                </tr>
-                <tr>
-                  <td>1,011</td>
-                  <td>eget</td>
-                  <td>nulla</td>
-                  <td>Class</td>
-                  <td>aptent</td>
-                </tr>
-                <tr>
-                  <td>1,012</td>
-                  <td>taciti</td>
-                  <td>sociosqu</td>
-                  <td>ad</td>
-                  <td>litora</td>
-                </tr>
-                <tr>
-                  <td>1,013</td>
-                  <td>torquent</td>
-                  <td>per</td>
-                  <td>conubia</td>
-                  <td>nostra</td>
-                </tr>
-                <tr>
-                  <td>1,014</td>
-                  <td>per</td>
-                  <td>inceptos</td>
-                  <td>himenaeos</td>
-                  <td>Curabitur</td>
-                </tr>
-                <tr>
-                  <td>1,015</td>
-                  <td>sodales</td>
-                  <td>ligula</td>
-                  <td>in</td>
-                  <td>libero</td>
-                </tr>
+                        <td><?php echo $row["nombre"] ?></td>
+                        <td><?php echo $row["nombrepiso"] ?></td>
+                        <td><?php echo $row["dia"]."/".$row["mes"]."/".$row["anio"] ?></td>
+                        <td><?php echo $row["hora"] ?></td>
+                        
+                        
+                       
+                    </tr>
+
+               <?php
+              }
+          } else {
+              echo "0 results";
+          }
+      ?>
+               
+              
               </tbody>
             </table>
           </div>

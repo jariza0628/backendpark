@@ -114,21 +114,21 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
           ?>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">Bloques</h1>
-          <h2 class="sub-header">Lista de Bloques</h2>
+          <h1 class="page-header">Pisos</h1>
+          <h2 class="sub-header">Lista de Pisos</h2>
           <div class="table-responsive">
 
           	<?php
-          	$sql = 'SELECT * FROM `tb_bloque`';
+          	$sql = 'SELECT * FROM `tb_piso`';
 			
           	?>
             <table class="table table-hover">
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Nombre</th>
+                  <th># Piso</th>
                   <th>Estado</th>
-                  <th>Edificio</th>
+                  <th>Bloque</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -142,12 +142,12 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 					     ?>
 					      
 					      <tr>
-			                  <td><?php echo $row["id_bloque"] ?></td>
+			                  <td><?php echo $row["id_piso"] ?></td>
 			                  <td><?php echo $row["numero"] ?></td>
 			                  <td><?php echo "Activo"?></td>
-			                  <td><?php echo "Transelca" ?></td>
+			                  <td><?php echo "Bloque 1" ?></td>
 			                  
-			                  <td><a href="#">Editar</a> <a href="#">Eliminar</a></td>
+			                  <td></td>
 			              </tr>
 
 					     <?php

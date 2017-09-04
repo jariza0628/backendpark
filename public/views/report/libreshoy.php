@@ -114,22 +114,56 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
           ?>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">Bloques</h1>
-          <h2 class="sub-header">Lista de Bloques</h2>
+          <h1 class="page-header">Reportes</h1>
+
+          
+
+          <h2 class="sub-header">Espacios libres para hoy</h2>
+          
+       
           <div class="table-responsive">
 
           	<?php
-          	$sql = 'SELECT * FROM `tb_bloque`';
+            date_default_timezone_set('America/Bogota');
+          	$dia = date("d");$mes=date("m");$anio=date("Y");
+            $sql = " SELECT 
+        `tb_espacio`.`id_espacio` AS `espacioid`,
+        `tb_espacio`.`numero` AS `nombre`,
+        `tb_espacio`.`id_piso` AS `idpiso`,
+        `tb_bloque`.`id_bloque` AS `idbloque`,
+        `tb_piso`.`numero` AS `nombrepiso`,
+        `tb_calendario`.`dia` AS `dia`,
+        `tb_calendario`.`mes` AS `mes`,
+        `tb_calendario`.`anio` AS `anio`,
+        `tb_calendario`.`horario` AS `hora`,
+        `tb_edificio`.`id_edificio` AS `idedificio`
+    FROM
+        ((((`tb_calendario`
+        JOIN `tb_espacio` ON ((`tb_calendario`.`id_espacio` = `tb_espacio`.`id_espacio`)))
+        JOIN `tb_piso` ON ((`tb_piso`.`id_piso` = `tb_espacio`.`id_piso`)))
+        JOIN `tb_bloque` ON ((`tb_bloque`.`id_bloque` = `tb_piso`.`id_bloque`)))
+        JOIN `tb_edificio` ON ((`tb_edificio`.`id_edificio` = `tb_bloque`.`id_edificio`)))
+    WHERE
+        ((NOT (`tb_espacio`.`id_espacio` IN (SELECT 
+                `tb_temp_usuario`.`id_espacio`
+            FROM
+                `tb_temp_usuario` WHERE fecha = '".$dia."/".$mes."/".$anio."')))
+            AND (`tb_espacio`.`estado` = 1))
+    AND  dia = '".$dia."' AND mes = '".$mes."' AND anio = '".$anio."'
+            ORDER BY hora
+            
+            ";
+        
 			
           	?>
             <table class="table table-hover">
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>Nombre</th>
-                  <th>Estado</th>
-                  <th>Edificio</th>
-                  <th>Acciones</th>
+                  <th># Espacio</th>
+                  <th>Piso</th>
+                  <th>Fecha</th>
+                  <th>Detalle</th>
+                  
                 </tr>
               </thead>
               <tbody>
@@ -139,15 +173,17 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 					if ($result->num_rows > 0) {
 					    // output data of each row
 					    while($row = $result->fetch_assoc()) {
+					    	
 					     ?>
 					      
 					      <tr>
-			                  <td><?php echo $row["id_bloque"] ?></td>
-			                  <td><?php echo $row["numero"] ?></td>
-			                  <td><?php echo "Activo"?></td>
-			                  <td><?php echo "Transelca" ?></td>
+			                  <td><?php echo $row["nombre"] ?></td>
+			                  <td><?php echo $row["nombrepiso"] ?></td>
+			                  <td><?php echo $row["dia"]."/".$row["mes"]."/".$row["anio"] ?></td>
+			                  <td><?php echo $row["hora"] ?></td>
 			                  
-			                  <td><a href="#">Editar</a> <a href="#">Eliminar</a></td>
+			                  
+			                 
 			              </tr>
 
 					     <?php

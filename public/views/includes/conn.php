@@ -5,9 +5,9 @@ $pass_db = "";
 $db_name = "bd_park";
 
 
-$conexion = new mysqli($host_db, $user_db, $pass_db, $db_name);
+$conn = new mysqli($host_db, $user_db, $pass_db, $db_name);
 
-if ($conexion->connect_error) {
- die("La conexion falló: " . $conexion->connect_error);
+if ($conn->connect_error) {
+ die("La conn falló: " . $conn->connect_error);
 }
 ?>

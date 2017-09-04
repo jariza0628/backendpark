@@ -47,13 +47,13 @@ $app->get('/', function(Request $request, Response $response){
         <img src="/views/asset/img/logo_tran.jpg" style="border-radius: 50px;">
       </div>
       <div style="float: left;text-align: center;min-width: 49%;">
-        <a href="http://slimapp/views/index.phtml">
+        <a href="http://slimapp/views/login/login.php">
             <img src="/views/asset/img/icon-free.png" width="300px" height="250px"><br>
             <span>Panel</span>
         </a>
       </div>
       <div style="float: right;text-align: center;min-width: 49%;">
-        <a href="http://slimapp/views/index.phtml">
+        <a href="http://slimapp/views/login/login.php">
             <img src="/views/asset/img/icon-silla.png" width="260px" height="250px"><br>
             <span>Panel</span>
         </a>
