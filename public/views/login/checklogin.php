@@ -6,7 +6,7 @@ session_start();
 
 $host_db = "localhost";
 $user_db = "root";
-$pass_db = "";
+$pass_db = "Mysqlparkbd";
 $db_name = "bd_park";
 $tbl_name = "tb_usuario";
 
