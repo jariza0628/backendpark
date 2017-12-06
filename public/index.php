@@ -10,4 +10,5 @@ $name = $request->getAttribute('name');
 $response->getBody()->write("Hello, $name");      
 return $response; });
 require '../src/routes/buildings.php'; 
+require '../src/routes/map.php'; 
 $app->run();
