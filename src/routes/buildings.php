@@ -508,7 +508,8 @@ $app->get('/api/daysFreeByUser/{id}', function(Request $request, Response $respo
         FROM `tb_usuario` INNER JOIN tb_espacio ON tb_usuario.id_usuario = tb_espacio.id_usuario 
         INNER JOIN tb_calendario oN tb_espacio.id_espacio = tb_calendario.id_espacio 
         WHERE tb_usuario.id_usuario = '$id' AND tb_usuario.id_edificio = 1
-        AND tb_calendario.dia >= '$dia' AND tb_calendario.mes >= '$mes' AND tb_calendario.anio = '$anio'";
+        AND tb_calendario.dia >= '$dia' AND tb_calendario.mes >= '$mes' AND tb_calendario.anio = '$anio'
+        OR tb_calendario.anio=2018 ORDER BY tb_calendario.`id_calendario` ASC";
     //echo "<br>".$sql."<br>";
     try{
         // Get DB Object
