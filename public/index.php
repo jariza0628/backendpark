@@ -7,5 +7,5 @@ require '../src/config/db.php';
 $app = new \Slim\App; 
 
 require '../src/routes/buildings.php'; 
-//require '../src/routes/novedades.php'; 
+require '../src/routes/novedades.php'; 
 $app->run();
