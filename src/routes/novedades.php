@@ -47,7 +47,7 @@ $app->delete('/api/novelty/{id}', function(Request $request, Response $response)
                     ->withHeader('Content-Type', 'application/json')
                     ->write(json_encode($data));
     }else{
-        return $response->withStatus(200)
+        return $response->withStatus(400)
                     ->withHeader('Content-Type', 'application/json')
                     ->write(json_encode($result));
     }
