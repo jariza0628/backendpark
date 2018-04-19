@@ -638,6 +638,7 @@ $app->put('/api/updatepass/{id_usuario}', function(Request $request, Response $r
 
 $app->get('/api/freeSpace/{info}', function(Request $request, Response $response){
     $info = $request->getAttribute('info');
+    $cont = 0;
     $idespacio = "";
     echo $info."<br>";
 
@@ -697,15 +698,19 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
     }
     //mes = mes and anio1 = anio1
     if($diferenciames == 0 AND $diferenciaanio == 0){
-       
+        
         $d1 = (int) $dia;
         $d2 = (int) $dia2;
         while ( $d1 <=  $d2) {
-            
+            $cont = $cont + 1;
             $var = consultar_si_exite_calendario($d1, $mes, $anio, $idespacio);
             //echo "entro var: ".$var;
             if($var=="vacio"){
                 insertar_calendario($d1, $mes, $anio, $jornada, $idespacio);
+                if($cont <= 1){
+                    sendMessage('Liberaron un espacio para el:'.$d1.'-'.$mes.'-'.$anio.'.');
+                }
+                
             }
             $d1 = $d1 + 1;
         }
@@ -715,13 +720,16 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
         $diai = $d1;
         $diaf = $diasdelmes;
         while($m1<=$m2){
-
+             
              while ( $diai <=  $diaf) {
-
+                $cont = $cont + 1;
                 $var = consultar_si_exite_calendario($diai, $m1, $anio, $idespacio);
                 //echo "entro var: ".$var;
                 if($var=="vacio"){
                     insertar_calendario($diai, $m1, $anio, $jornada, $idespacio);
+                    if($cont <= 1){
+                        sendMessage('Liberaron un espacio para el:'.$diai.'-'.$m1.'-'.$anio.'.');
+                    }
                 }
                 //$sql = "INSERT INTO `tb_calendario` (`id_calendario`, `dia`, `mes`, `anio`, `horario`, `id_espacio`) VALUES 
                 //(NULL, '".$diai."', '".$m1."', '".$anio."', '".$jornada."', '".$idespacio."');";
@@ -743,8 +751,10 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
         $diaf = $diasdelmes;
         $m2f = 12;
         while ($a1 <= $a2) {
+             
             while($m1<=$m2f){
                 while ( $diai <=  $diaf) {
+                    $cont = $cont + 1;
                     $diaa = $diai;
                     $mess = $m1;
                   
@@ -752,6 +762,9 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
                     //echo "entro var: ".$var;
                     if($var=="vacio"){
                         insertar_calendario($diaa, $mess, $a1, $jornada, $idespacio);
+                        if($cont <= 1){
+                            sendMessage('Liberaron un espacio para el:'.$diaa.'-'.$mess.'-'.$a1.'.');
+                        }
                     }
                      $diai = $diai +1;
                 }
