@@ -88,3 +88,5 @@ $app->get('/api/push2/{sms}', function(Request $request, Response $response){
 	print("\n");
   
 });
+
+?>
