@@ -12,8 +12,8 @@ function sendMessage($msj){
 		);
 		
 		$fields = json_encode($fields);
-    	//print("\nJSON sent:\n");
-    	//print($fields);
+    	print("\nJSON sent:\n");
+    	print($fields);
 		
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
@@ -30,3 +30,11 @@ function sendMessage($msj){
 		
 		return $response;
 	}
+
+$app->get('/api/push/{sms}', function(Request $request, Response $response){
+    $id = $request->getAttribute('sms');
+   
+		echo 'mensaje: '.$id;
+		sendMessage($id);
+  
+});
