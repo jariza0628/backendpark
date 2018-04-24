@@ -6,14 +6,14 @@ function sendMessage($msj){
 		
 		$fields = array(
 			'app_id' => "c5d67ed6-d117-4987-88c3-4b7dc45f2ba8",
-			'included_segments' => array('Active Users'),
+			'included_segments' => array('All'),
 			'data' => array("foo" => "bar"),
 			'contents' => $content
 		);
 		
 		$fields = json_encode($fields);
-    	print("\nJSON sent:\n");
-    	print($fields);
+    	//print("\nJSON sent:\n");
+    	//print($fields);
 		
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
