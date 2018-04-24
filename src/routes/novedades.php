@@ -254,15 +254,21 @@ function sendMessage($msj){
 		return $response;
 	}
 
-
-$app->get('/api/push/{sms}', function(Request $request, Response $response){
-    $id = $request->getAttribute('sms');
-   
-		echo 'mensaje: '.$id;
-		//sendMessage($id);
-  
+$app->get('/api/push', function(Request $request, Response $response){
+    $response = sendMessage2();
+	$return["allresponses"] = $response;
+	$return = json_encode( $return);
+	
+	/*print("\n\nJSON received:\n");
+	print($return);
+	print("\n");*/
+ 
+    return $response->withStatus(200)
+                    ->withHeader('Content-Type', 'application/json')
+                    ->write($return);
+ 
 });
-
+ 
 $app->get('/api/push2/{sms}', function(Request $request, Response $response){
     $id = $request->getAttribute('sms');
    	
