@@ -241,7 +241,7 @@ function sendMessage($msj){
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
-												   'Authorization: Basic YOUR_REST_API_KEY'));
+												   'Authorization: Basic ODg3YmM4MDktNWUwNS00NGEzLThmOTAtYTU0Nzc3ODczMjBj'));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 		curl_setopt($ch, CURLOPT_HEADER, FALSE);
 		curl_setopt($ch, CURLOPT_POST, TRUE);
@@ -254,12 +254,29 @@ function sendMessage($msj){
 		return $response;
 	}
 
-$app->get('/api/push', function(Request $request, Response $response){
+$app->get('/api/pushhola', function(Request $request, Response $response){
+    /*
     $response = sendMessage2();
 	$return["allresponses"] = $response;
 	$return = json_encode( $return);
 	
-	/*print("\n\nJSON received:\n");
+	print("\n\nJSON received:\n");
+	print($return);
+	print("\n");*/
+ 
+    return $response->withStatus(200)
+                    ->withHeader('Content-Type', 'application/json')
+                    ->write(json_encode( 'hola'));
+ 
+});
+
+$app->get('/api/push', function(Request $request, Response $response){
+    
+    $response = sendMessage2();
+	$return["allresponses"] = $response;
+	$return = json_encode( $return);
+	/*
+	print("\n\nJSON received:\n");
 	print($return);
 	print("\n");*/
  
