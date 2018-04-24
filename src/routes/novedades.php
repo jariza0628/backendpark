@@ -272,17 +272,12 @@ $app->get('/api/pushhola', function(Request $request, Response $response){
 
 $app->get('/api/push', function(Request $request, Response $response){
     
-    $response = sendMessage2();
-	$return["allresponses"] = $response;
-	$return = json_encode( $return);
-	/*
-	print("\n\nJSON received:\n");
-	print($return);
-	print("\n");*/
+    $response = sendMessage('hola');
+ 
  
     return $response->withStatus(200)
                     ->withHeader('Content-Type', 'application/json')
-                    ->write($return);
+                    ->write(json_encode( 'push'));
  
 });
  
