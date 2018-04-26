@@ -2,7 +2,7 @@
  use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 //*************** */
-
+date_default_timezone_set('America/Bogota');
 function sendMessage($msj){
 		$content = array(
 			"en" => $msj
@@ -53,5 +53,12 @@ $app->get('/api/push', function(Request $request, Response $response){
                     ->write(json_encode( 'push'));
  
 });
-
+$app->get('/api/timenow', function(Request $request, Response $response){
+    $hour = array(
+		"hour" => date('H'),
+	);
+	return $response->withStatus(200)
+                    ->withHeader('Content-Type', 'application/json')
+                    ->write(json_encode($hour));
+});
 ?>
