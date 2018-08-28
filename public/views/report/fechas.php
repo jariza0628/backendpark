@@ -114,64 +114,97 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
           ?>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-
           <h1 class="page-header">Reportes</h1>
 
-          <div class="row placeholders">
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <a href="historial.php">
-              <img src="../asset/img/op.jpg" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Reporte</h4>
-              <span class="text-muted">Historial de Uso</span>
-              </a>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-            <a href="libreshoy.php">
-              <img src="../asset/img/op.jpg" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Reporte</h4>
-              <span class="text-muted">Espacios libres hoy</span>
-              </a>
-            </div>
-             <div class="col-xs-6 col-sm-3 placeholder">
-            <a href="vecesutilizadosporusuarios.php">
-              <img src="../asset/img/op.jpg" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Reporte</h4>
-              <span class="text-muted">Numero de veces utilizado por usuario</span>
-              </a>
-            </div>
-           
-            <div class="col-xs-6 col-sm-3 placeholder">
-            <a href="historial_calendario.php">
-              <img src="../asset/img/op.jpg" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Reporte</h4>
-              <span class="text-muted">Historial de fechas liberadas</span>
-              </a>
-            </div>
-          </div>
-           <div class="row placeholders">
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <a href="numerovecesliberadoporusuario.php">
-              <img src="../asset/img/op.jpg" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Reporte</h4>
-              <span class="text-muted">Numero de veces liberado por usuarios</span>
-              </a>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <a href="quienusahoy.php">
-              <img src="../asset/img/op.jpg" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Reporte</h4>
-              <span class="text-muted">Usuarios de espacios de hoy</span>
-              </a>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <a href="fechas.php">
-              <img src="../asset/img/op.jpg" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Reporte</h4>
-              <span class="text-muted">Espacios liberados por rangos de fecha</span>
-              </a>
-            </div>
-          </div>
+          
 
+          <h2 class="sub-header">Listado de fechas liberadas por rango<h2>
+         
+            <div class="row">
+                <table style="width: 100%" border="0">
+                        <form action="fechas.php" method="POST">
+                    <tr>
+                        <td style="padding-left: 10px; padding-right: 10px">
+                            <label for="date1" style="font-size: 16px;">De:</label>
+                            <input type="date" name="f1" class="form-control" id="date1" required>   
+                        </td>
+                        <td style="padding-left: 10px; padding-right: 10px">
+                            <label for="date2" style="font-size: 16px;">hasta:</label>
+                            <input type="date" name="f2" class="form-control" id="date2" required>   
+                        </td >
+                        <td style="padding-left: 10px; padding-right: 10px">
+                            <br>
+                            <input class="btn btn-primary" type="submit">
+                        </td>
+                    </tr>
+                </form>
+                </table>
+              
+            
+         </div>
+      
+        
+       
+          <div class="table-responsive">
+
+              <?php
+              $hoy = date("Y-m-d");
+              $sql = "SELECT * FROM `calendariotodate` WHERE `fecha` BETWEEN '".$hoy ."' AND '".$hoy."'";
+            if(isset($_POST['f1']) && $_POST['f1']!='' && isset($_POST['f2']) && $_POST['f2']!=''){
+                if(date_create($_POST['f1']) > date_create($_POST['f2'])){
+                    echo '<span style="font-size:16px;color:red;">La fecha inicial no puede ser mayor a la final</span> ';
+                }else{
+                    $sql = "SELECT * FROM `calendariotodate` WHERE `fecha` BETWEEN '".$_POST['f1']."' AND '".$_POST['f2']."'";
+                    //echo $sql;
+                }
+              
+            }else{
+                $sql = "SELECT * FROM `calendariotodate` WHERE `fecha` BETWEEN '".$hoy ."' AND '".$hoy."'";
+            }
+            
+        
+			
+          	?>
+            <table class="table table-hover" style="font-size: 15px">
+              <thead>
+                <tr>
+                  <th># Espacio</th>
+                  <th>Fecha</th>
+                  <th>Horario</th>
+                  <th>Nombre</th>
+                </tr>
+              </thead>
+              <tbody>
+              <?php
+              $result = $conn->query($sql);
+
+					if ($result->num_rows > 0) {
+					    // output data of each row
+					    while($row = $result->fetch_assoc()) {
+					    	
+					     ?>
+					      
+					      <tr>
+			                  <td><?php echo $row["espacio"] ?></td>
+			                  <td><?php echo $row["fecha"] ?></td>
+			                  <td><?php echo $row["horario"] ?></td>
+                        <td><?php echo $row["nombre"] ?></td>
+			                  
+			                  
+			                 
+			              </tr>
+
+					     <?php
+					    }
+					} else {
+					    echo '<span style="font-size:16px;color:red;">0 results</span>';
+					}
+			?>
+               
+              
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
