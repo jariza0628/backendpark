@@ -3,8 +3,8 @@
         // Properties
         private $dbhost = 'localhost';
         private $dbuser = 'root';
-        private $dbpass = 'Mysqlparkbd';
-        //private $dbpass = '';
+        //private $dbpass = 'Mysqlparkbd';
+        private $dbpass = '';
         private $dbname = 'bd_park';
         // Connect
         public function connect(){

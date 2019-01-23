@@ -163,6 +163,13 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
               <span class="text-muted">Usuarios de espacios de hoy</span>
               </a>
             </div>
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <a href="fechas.php">
+              <img src="../asset/img/op.jpg" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Reporte</h4>
+              <span class="text-muted">Espacios liberados por rangos de fecha</span>
+              </a>
+            </div>
           </div>
 
         </div>
