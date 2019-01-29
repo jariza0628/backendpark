@@ -1,7 +1,7 @@
 <?php
 $host_db = 'localhost';
 $user_db = 'root';
-$pass_db = '';
+$pass_db = 'Mysqlparkbd';
 $db_name = 'bd_park';
 
 
