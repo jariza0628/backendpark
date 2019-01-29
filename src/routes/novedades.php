@@ -169,6 +169,22 @@ function delete($sql){
        return  $arr;
    }
 }
+function update($sql){
+    try{
+    // Get DB Object
+    $db = new db();
+    // Connect
+    $db = $db->connect();
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    $db = null;
+    $arr = array('message' => 'Register update');
+    return  $arr;
+} catch(PDOException $e){
+    $arr = array('message' => $e->getMessage());
+    return  $arr;
+}
+}
 function insert($sql){
     try{
         // Get DB Object

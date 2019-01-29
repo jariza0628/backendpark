@@ -18,6 +18,6 @@ $app->add(function ($req, $res, $next) {
 });
 require 'src/routes/notifications.php'; 
 require 'src/routes/buildings.php'; 
+require 'src/routes/reservas.php'; 
 require 'src/routes/novedades.php'; 
-
 $app->run();
