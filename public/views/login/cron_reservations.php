@@ -91,6 +91,7 @@ if (mysqli_num_rows($result) > 0) {
     }
     asignar_reservas();
 } else {
+    echo $sql;
     echo "0 results";
 }
 /**
