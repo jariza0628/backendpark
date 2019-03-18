@@ -540,22 +540,90 @@ $app->get('/api/SpaceOccupiedForMe/{id}', function(Request $request, Response $r
 });
 
 
-
-$app->delete('/api/FreeDayByUser/delete/{id}', function(Request $request, Response $response){
+/**
+ * Elimina el espacio del calenario queda eliminado
+ * No se puede elimiar si esta ocupado
+ */
+$app->delete('/api/FreeDayByUser/delete/{id}/{fecha}', function(Request $request, Response $response){
     $id = $request->getAttribute('id');
-    $sql = "DELETE FROM `tb_calendario` WHERE `tb_calendario`.`id_calendario` = '$id'";
-    try{
-        // Get DB Object
-        $db = new db();
-        // Connect
-        $db = $db->connect();
-        $stmt = $db->prepare($sql);
-        $stmt->execute();
-        $db = null;
-        echo '{"notice": {"text": "Customer Deleted"}';
-    } catch(PDOException $e){
-        echo '{"error": {"text": '.$e->getMessage().'}';
+    $fecha = $request->getAttribute('fecha');
+    $fecha_hoy = date("d-m-Y");
+    //traer el id_espacio por el id_calenadrio
+    $id_espacio = obtener_espacioid_por_idcalendario($id);
+    //echo '$id_espacio ' . $id_espacio . '<br>';
+    //echo 'entro ocupado fechas: '. $fecha .' - '. $fecha_hoy. '<br>';
+    if($id_espacio != "vacio" ){
+        // Consultar si el espacio no esta ocupado
+        $result = consultar_si_exite_tb_temp_usuario($id_espacio);
+        //echo 'entrp $result ' . $result . '<br>';
+        if($result === "vacio"){
+            //echo 'entro delete 1: '.$result. '<br>';
+            $sql = "DELETE FROM `tb_calendario` WHERE `tb_calendario`.`id_calendario` = '$id'";
+            try{
+                // Get DB Object
+                $db = new db();
+                // Connect
+                $db = $db->connect();
+                $stmt = $db->prepare($sql);
+                $stmt->execute();
+                $db = null;
+                //echo '{"notice": {"text": "Customer Deleted"}';
+                $data = array('message' => 'Eliminado');
+                return $response->withStatus(200)
+                                ->withHeader('Content-Type', 'application/json')
+                                ->write(json_encode($data));
+            } catch(PDOException $e){
+                //echo '{"error": {"text": '.$e->getMessage().'}';
+                $data = array('error' => '$e->getMessage()');
+                return $response->withStatus(200)
+                    ->withHeader('Content-Type', 'application/json')
+                    ->write(json_encode($data));
+            }
+        }else{
+            // Si la fehca de liberacion es diferente a la actual, se puede eliminar
+            //echo 'entro ocupado fechas 2: '. $fecha .' - '. $fecha_hoy;
+            if($fecha != $fecha_hoy){
+                $sql = "DELETE FROM `tb_calendario` WHERE `tb_calendario`.`id_calendario` = '$id'";
+                try{
+                    // Get DB Object
+                    $db = new db();
+                    // Connect
+                    $db = $db->connect();
+                    $stmt = $db->prepare($sql);
+                    $stmt->execute();
+                    $db = null;
+                    //echo '{"notice": {"text": "Customer Deleted"}';
+                    $data = array('message' => 'Eliminado');
+                    return $response->withStatus(200)
+                                    ->withHeader('Content-Type', 'application/json')
+                                    ->write(json_encode($data));
+                } catch(PDOException $e){
+                    //echo '{"error": {"text": '.$e->getMessage().'}';
+                    $data = array('error' => '$e->getMessage()');
+                        return $response->withStatus(200)
+                        ->withHeader('Content-Type', 'application/json')
+                        ->write(json_encode($data));
+                }
+            }else{
+                    // ocupado no puede elmiar
+                    //echo '{"notice": {"text": "ocupado no puede elmiar"}';
+                    $data = array('message' => 'EL ESPACIO ESTA SIENDO USADO ACTUALMENTE');
+                    return $response->withStatus(200)
+                                    ->withHeader('Content-Type', 'application/json')
+                                    ->write(json_encode($data));
+
+            }
+
+        }
+    }else{
+        // No se encontro id espacio
+        $data = array('message' => 'No se encontro id espacio');
+        return $response->withStatus(200)
+        ->withHeader('Content-Type', 'application/json')
+        ->write(json_encode($data));
     }
+
+
 });
 
 $app->get('/api/idSpaceByuser/{iduser}', function(Request $request, Response $response){
@@ -816,6 +884,35 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
 
             return $resultado;
     }
+    /**
+     * Devueve el Id del espacio correpondiente a la liberacion
+     * del calaendario indiicado
+     */
+    function obtener_espacioid_por_idcalendario($id_calendario){
+        $resultado = ""; 
+        $sql="SELECT id_espacio FROM `tb_calendario` WHERE id_calendario = $id_calendario";
+        //echo $sql . '<br>';
+        try{
+        // Get DB Object
+            $db = new db();
+            // Connect
+            $db = $db->connect();
+            $stmt = $db->query($sql);
+            foreach($stmt as $row)
+            $id_espacio = $row[0];
+            $result = $stmt->fetchAll(PDO::FETCH_OBJ);
+            $db = null;
+            //echo 'echo CF '. $id_espacio . '<br>';
+            if($id_espacio){
+                $resultado = $id_espacio;
+            }else{ $resultado = "vacio";}
+        } catch(PDOException $e){
+                //echo '{"error": {"text": '.$e->getMessage().'}';
+                $resultado = $e->getMessage();
+        }
+        //echo $resultado;
+        return $resultado;
+    }
      function consultar_si_exite_tb_temp_usuario($id_espacio){//validar si ya se esta usando el parquedero evistar duplicidad
          
          $resultado = ""; 
@@ -834,10 +931,10 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
                 $resultado = "ocupado";
             }else{ $resultado = "vacio";}
             } catch(PDOException $e){
-                echo '{"error": {"text": '.$e->getMessage().'}';
+                //echo '{"error": {"text": '.$e->getMessage().'}';
                 $resultado = $e->getMessage();
             }
-            echo $resultado;
+            //echo $resultado;
             return $resultado;
     }
 

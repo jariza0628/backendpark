@@ -20,4 +20,5 @@ require '../src/routes/notifications.php';
 require '../src/routes/buildings.php'; 
 require '../src/routes/reservas.php'; 
 require '../src/routes/novedades.php'; 
+require '../src/routes/millas.php'; 
 $app->run();
