@@ -16,9 +16,9 @@ $app->add(function ($req, $res, $next) {
             ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
             ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
 });
-require 'src/routes/notifications.php'; 
-require 'src/routes/buildings.php'; 
-require 'src/routes/reservas.php'; 
-require 'src/routes/novedades.php'; 
-require 'src/routes/millas.php'; 
+require '../src/routes/notifications.php'; 
+require '../src/routes/buildings.php'; 
+require '../src/routes/reservas.php'; 
+require '../src/routes/novedades.php'; 
+require '../src/routes/millas.php'; 
 $app->run();
