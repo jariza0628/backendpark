@@ -27,8 +27,17 @@ $app->get('/api/miles/detail/{id}', function(Request $request, Response $respons
 //Sumatoria Millas por usuario
 $app->get('/api/miles/{iduser}', function(Request $request, Response $response){
     $id = $request->getAttribute('iduser');
-    $sql = "SELECT SUM(numero_millas) AS total_millas, `tb_usuario_id_usuario` FROM `tb_millas` WHERE`tb_usuario_id_usuario`=75";
-    acomularMillas(1, 2);
+    $sql = "SELECT SUM(numero_millas) AS total_millas, `tb_usuario_id_usuario` FROM `tb_millas` WHERE`tb_usuario_id_usuario`=$id";
+    $data =  getFechAll($sql);
+    return $response->withStatus(200)
+                    ->withHeader('Content-Type', 'application/json')
+                    ->write(json_encode($data));
+ 
+});
+//Sumatoria Millas por usuario
+$app->get('/api/miles/history/{iduser}', function(Request $request, Response $response){
+    $id = $request->getAttribute('iduser');
+    $sql = "SELECT * FROM `tb_millas` WHERE`tb_usuario_id_usuario`=$id ORDER BY `tb_millas`.`fecha` DESC ";
     $data =  getFechAll($sql);
     return $response->withStatus(200)
                     ->withHeader('Content-Type', 'application/json')
@@ -70,7 +79,7 @@ $app->post('/api/miles/redeem', function(Request $request, Response $response){
             INSERT INTO `tb_millas` 
             (`id_millas`, `numero_millas`, `fecha`, `motivo`, `tb_usuario_id_usuario`) 
             VALUES 
-            (NULL, '100', CURRENT_TIMESTAMP, 'Liberacion', '75');
+            (NULL, $numero_millas, CURRENT_TIMESTAMP, 'Liberacion', $iduser);
             ";
             //code...
                  // Get DB Object
@@ -88,7 +97,7 @@ $app->post('/api/miles/redeem', function(Request $request, Response $response){
             return  $arr;
         }
     }
-     //Acumular millas
+     //Eliminar millas
     function eliminacionMillas($iduser, $numero_millas, $motivo){
         try {
             $numero_millas = $numero_millas * -1;
@@ -107,7 +116,7 @@ $app->post('/api/miles/redeem', function(Request $request, Response $response){
             $stmt = $db->prepare($sql);
             $stmt->execute();
             $lastInsertId = $db->lastInsertId();
-            $arr = array('message' => 'Millas Añadidas', 'Id' => $lastInsertId);
+            $arr = array('message' => 'Millas Eliminadas', 'Id' => $lastInsertId);
             return  $arr;
         } catch (PDOException $e) {
             //throw $th;

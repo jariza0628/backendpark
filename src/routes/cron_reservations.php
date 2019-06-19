@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ * php -S localhost:8888 -t public index.php
  * Se ejecuta 1 vez al dia
  * 1. Consulta los espacios libre para el dia actual
  * 2. Insertar los espacios libre en una tabla temporal
@@ -25,8 +25,8 @@
 date_default_timezone_set('America/Bogota');
 $servername = "localhost";
 $username = "root";
-//$password = "Mysqlparkbd";
 $password = "Mysqlparkbd";
+//$password = "";
 $dbname = "BD_PARK";
 
 // Create connection
@@ -100,7 +100,7 @@ function asignar_reservas(){
     $servername = "localhost";
     $username = "root";
     //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
+    $password = "";
     $dbname = "BD_PARK";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
     $sql = "SELECT * FROM `tb_reservas` WHERE `estado`='ACTIVA'";
@@ -136,7 +136,7 @@ function asignar_manana($id_usuario, $id_reserva){
     $servername = "localhost";
     $username = "root";
     //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
+    $password = "";
     $dbname = "BD_PARK";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
     $sql = "SELECT * FROM `tb_asignacion_reserva_temp` WHERE (`jornada`='MANANA' OR `jornada`='DIA') AND `ocupado_m`= 0 AND `ocupado_dia`= 0";
@@ -163,7 +163,7 @@ function asignar_tarde($id_usuario, $id_reserva){
     $servername = "localhost";
     $username = "root";
     //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
+    $password = "";
     $dbname = "BD_PARK";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
     $sql = "SELECT * FROM `tb_asignacion_reserva_temp` WHERE (`jornada`='TARDE' OR `jornada`='DIA') AND `ocupado_t`= 0 AND `ocupado_dia`= 0";
@@ -188,7 +188,7 @@ function asignar_dia($id_usuario, $id_reserva){
     $servername = "localhost";
     $username = "root";
     //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
+    $password = "";
     $dbname = "BD_PARK";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
     $sql = "SELECT * FROM `tb_asignacion_reserva_temp` WHERE  `jornada`='DIA' AND `ocupado_dia`= 0 AND `ocupado_t`= 0 AND `ocupado_m`= 0";
@@ -203,7 +203,9 @@ function asignar_dia($id_usuario, $id_reserva){
             break; 
         }
     } else {
-        echo "0 results";
+        echo "0 results buscar una mañana y nuna tarde <br>";
+        asignar_tarde($id_usuario, $id_reserva);
+        asignar_manana($id_usuario, $id_reserva);
     }
     
 }
@@ -216,7 +218,7 @@ function actulizar_registro_reserva($id_user, $campo, $id_tb_temp, $id_reserva, 
     $servername = "localhost";
     $username = "root";
     //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
+    $password = "";
     $dbname = "BD_PARK";
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);
@@ -246,7 +248,7 @@ function actulizar_registro_reserva_asignada($id_reserva, $id_user, $id_espacio)
     $servername = "localhost";
     $username = "root";
     //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
+    $password = "";
     $dbname = "BD_PARK";
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);
@@ -271,16 +273,14 @@ function asignar_espacio($id_espacio, $id_user){
     $servername = "localhost";
     $username = "root";
     //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
+    $password = "";
     $dbname = "BD_PARK";
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);
     // Check connection
-
     //$validacion = consultar_si_exite_tb_temp_usuario($id_espacio);
     //echo $validacion.' HV' . '<br>';
     echo 'espacio id, user: '.$id_espacio .''. $id_user. '<br>';
- 
         $sql="INSERT INTO `tb_temp_usuario` (`id_temp`, `fecha`, `estado`, `id_usuario`, `id_espacio`)
         VALUES (NULL, '".date("d/m/Y")."', '1', $id_user, $id_espacio);";
         echo $sql .'<br>';
@@ -289,15 +289,13 @@ function asignar_espacio($id_espacio, $id_user){
         } else {
             echo "Error: " . $sql . "<br>" . mysqli_error($conn);
         }        
-
-
 }
 //validar si ya se esta usando el parquedero evistar duplicidad
 function consultar_si_exite_tb_temp_usuario($id_espacio){
     $servername = "localhost";
     $username = "root";
     //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
+    $password = "";
     $dbname = "BD_PARK";
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);

@@ -407,6 +407,7 @@ $app->delete('/api/delSpaceTmp/delete/{id}', function(Request $request, Response
         $stmt = $db->prepare($sql);
         $stmt->execute();
         $db = null;
+        
         echo '{"notice": {"text": "Customer Deleted"}';
     } catch(PDOException $e){
         echo '{"error": {"text": '.$e->getMessage().'}';
@@ -568,7 +569,9 @@ $app->delete('/api/FreeDayByUser/delete/{id}/{fecha}', function(Request $request
                 $stmt->execute();
                 $db = null;
                 //echo '{"notice": {"text": "Customer Deleted"}';
-                $data = array('message' => 'Eliminado');
+                $iduser =  obtener_id_usuario_por_id_espacio($id_espacio);
+                $data = array('message' => 'Eliminado 2');
+                eliminacionMillas($iduser, 100, 'Eliminacion de espacio');
                 return $response->withStatus(200)
                                 ->withHeader('Content-Type', 'application/json')
                                 ->write(json_encode($data));
@@ -956,6 +959,10 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
                 $db = $db->connect();
                 $stmt = $db->prepare($sql);
                 $stmt->execute();
+                $lastInsertId = $db->lastInsertId();
+                // Valiadar la hora de ejecucion
+                $hora = date("H:i:s");
+                registrar_liberacion($dia, $mes, $anio, $jornada, $id_espacio);
                 //echo '{"notice": {"text": "Customer Added" '.$sql.'}';
             } catch(PDOException $e){
                 //echo '{"error": {"text": '.$e->getMessage().'}';

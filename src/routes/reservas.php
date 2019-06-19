@@ -24,6 +24,17 @@ $app->get('/api/reservations/{iduser}', function(Request $request, Response $res
                     ->write(json_encode($data));
  
 });
+//traer las reservas asigandas por id usuario
+$app->get('/api/reservations/asg/{iduser}', function(Request $request, Response $response){
+    $id = $request->getAttribute('iduser');
+    $sql = "SELECT * FROM `tb_asignacion_reserva_temp` WHERE `ocupado_m`=$id OR `ocupado_t` =$id OR `ocupado_dia` =$id";
+    
+    $data =  getFechAll($sql);
+    return $response->withStatus(200)
+                    ->withHeader('Content-Type', 'application/json')
+                    ->write(json_encode($data));
+ 
+});
 //eliminar reservas
 $app->delete('/api/reservations/{id}', function(Request $request, Response $response){
     $id = $request->getAttribute('id');
@@ -46,6 +57,7 @@ $app->post('/api/reservations', function(Request $request, Response $response){
     VALUES (NULL, CURRENT_TIMESTAMP, '$jornada', $iduser, 'ACTIVA');";
  
     $data = insert($sql);
+    asignar_reserva_despues();
     return $response->withStatus(201)
                     ->withHeader('Content-Type', 'application/json')
                     ->write(json_encode($data));
@@ -53,7 +65,7 @@ $app->post('/api/reservations', function(Request $request, Response $response){
 /**
  * ****** Reservas despues de ejecutador el archivo cron_reservation.php ************
  * Se tiene en cuentas: 
- * 1. Que ocurre cuando se liver un espacio despues de la asigancion automatica del archivo cron_reservation.php
+ * 1. Que ocurre cuando se libera un espacio despues de la asigancion automatica del archivo cron_reservation.php
  *      - Se libera un espacio:
  *        Se inserta en la tabla tempora de la reserva
  *      - Buscar reservas activas y asignar los espacios a los usuarios que cumplan las condiciones de jornada, es decir
@@ -63,9 +75,9 @@ $app->post('/api/reservations', function(Request $request, Response $response){
  * 
  */
 //asignar reservas ejecutar
-$app->post('/api/reservationsafter', function(Request $request, Response $response){
+$app->get('/api/reservationsafter', function(Request $request, Response $response){
  
-
+    
     asignar_reserva_despues();
  
     $data = array('message' => 'Asignacion de reservas ejecutado');
@@ -76,7 +88,185 @@ $app->post('/api/reservationsafter', function(Request $request, Response $respon
  function asignar_reserva_despues(){
     asignar_reservas();
  }
+/***
+ * Al momento de que ocurra una liberacion se guarda el registro 
+ * en tb_asignacion_reserva_temp desdepues de las 6.15 am
+ * solo se registra para el mismo dia
+ */
+ function registrar_liberacion($d, $m, $a, $jornada, $espacioid){
+    $iduser =  obtener_id_usuario_por_id_espacio($espacioid);
+    if($iduser!==""){
+        acomularMillas($iduser, '100');
+    }
+    $hora = strtotime(date("H:i:s")); 
+    $hoy = strtotime(date("d-m-Y"));
+    $fecha_entrada = strtotime($d."-".$m."-".$a);
+    $hora_permmitida = strtotime(date("06:15:00"));   
+    if($hoy === $fecha_entrada){
+        if($hora > $hora_permmitida){
+            $servername = "localhost";
+            $username = "root";
+            //$password = "Mysqlparkbd";
+            $password = "";
+            $dbname = "bd_park";
+            // Create connection
+            $conn = mysqli_connect($servername, $username, $password, $dbname);
+    
+            $joranada;
+            if($jornada==='Libre de 14:00 a 18:00'){
+                $joranada = 'TARDE';
+            }
+            if($jornada==='Libre de 8:00 a 12:00'){
+                $joranada = 'MANANA';
+            }
+            if($jornada==='Libre Todo el dia'){
+                $joranada = 'DIA';
+            };
+    
+            $fecha_contatenada = $a."-".$m."-".$d;
+            $nombre = obtener_nombreespacio_por_idespacio($espacioid);
+            $idpiso = obtener_idpiso_por_idespacio($espacioid);
+            $nombrepiso = obtener_numeropiso_por_idpiso($idpiso);
+            $sql ="INSERT INTO `tb_asignacion_reserva_temp` 
+            (`id_asignacion_temp`,
+            `id_espacio`,
+            `numero_espacio`,
+            `idpiso`,
+                `pisonumero`, 
+                `fecha`, 
+                `jornada`, 
+                `ocupado_m`,
+                `ocupado_t`, 
+                `ocupado_dia`) 
+            VALUES 
+            (NULL, 
+            '$espacioid',
+            '$nombre', 
+            '$idpiso', 
+            '$nombrepiso',
+            '$fecha_contatenada', '$joranada', '0', '0', '0');";
+            // echo $sql;
+            // Almacenar espacios disponibles para hoy en una tabla temporar se adicionan 3 campos
+            // para controlar que joprnada esta siendo ocupada
+            if (mysqli_query($conn, $sql)) {
+            // echo "New record created successfully";
+                asignar_reserva_despues();
+            } else {
+            // echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+            }
+        }// fin control hora
+    }  
 
+
+ }
+ /***
+  * Si se elimina un aliberacion se debe eliminar de tb_asignacion_reserva_temp
+  * si no est ausado ni tenga reserva  
+  */
+  function eliminar_liberacion(){
+
+  }
+
+function obtener_nombreespacio_por_idespacio($id_espacio){
+    $resultado = ""; 
+    $sql="SELECT numero FROM `tb_espacio` WHERE id_espacio = $id_espacio";
+    //echo $sql . '<br>';
+    try{
+    // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        foreach($stmt as $row)
+        $numero = $row[0];
+        $result = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $db = null;
+        //echo 'echo CF '. $numero . '<br>';
+        if($numero){
+            $resultado = $numero;
+        }else{ $resultado = "vacio";}
+    } catch(PDOException $e){
+            //echo '{"error": {"text": '.$e->getMessage().'}';
+            $resultado = $e->getMessage();
+    }
+    //echo $resultado;
+    return $resultado;
+}
+function obtener_idpiso_por_idespacio($id_espacio){
+    $resultado = ""; 
+    $sql="SELECT id_piso FROM `tb_espacio` WHERE id_espacio = $id_espacio";
+    //echo $sql . '<br>';
+    try{
+    // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        foreach($stmt as $row)
+        $numero = $row[0];
+        $result = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $db = null;
+        //echo 'echo CF '. $numero . '<br>';
+        if($numero){
+            $resultado = $numero;
+        }else{ $resultado = "vacio";}
+    } catch(PDOException $e){
+            //echo '{"error": {"text": '.$e->getMessage().'}';
+            $resultado = $e->getMessage();
+    }
+    //echo $resultado;
+    return $resultado;
+}
+function obtener_numeropiso_por_idpiso($idpiso){
+    $resultado = ""; 
+    $sql="SELECT numero FROM `tb_piso` WHERE id_piso = $idpiso";
+    //echo $sql . '<br>';
+    try{
+    // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        foreach($stmt as $row)
+        $numero = $row[0];
+        $result = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $db = null;
+        //echo 'echo CF '. $numero . '<br>';
+        if($numero){
+            $resultado = $numero;
+        }else{ $resultado = "vacio";}
+    } catch(PDOException $e){
+            //echo '{"error": {"text": '.$e->getMessage().'}';
+            $resultado = $e->getMessage();
+    }
+    //echo $resultado;
+    return $resultado;
+}
+function obtener_id_usuario_por_id_espacio($idespacio){
+    $resultado = ""; 
+    $sql="SELECT `id_usuario` FROM `tb_espacio` WHERE `id_espacio`=$idespacio";
+    //echo $sql . '<br>';
+    try{
+    // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        foreach($stmt as $row)
+        $numero = $row[0];
+        $result = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $db = null;
+        //echo 'echo CF '. $numero . '<br>';
+        if($numero){
+            $resultado = $numero;
+        }else{ $resultado = "vacio";}
+    } catch(PDOException $e){
+            //echo '{"error": {"text": '.$e->getMessage().'}';
+            $resultado = $e->getMessage();
+    }
+    //echo $resultado;
+    return $resultado;
+}
  /**
  * Asignar espacios a reserva
  */
@@ -84,9 +274,12 @@ function asignar_reservas(){
     $servername = "localhost";
     $username = "root";
     //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
-    $dbname = "BD_PARK";
+    $password = "";
+    $dbname = "bd_park";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
+    if (!$conn) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
     $sql = "SELECT * FROM `tb_reservas` WHERE `estado`='ACTIVA'";
     $result = $conn->query($sql);
 
@@ -120,8 +313,8 @@ function asignar_manana($id_usuario, $id_reserva){
     $servername = "localhost";
     $username = "root";
     //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
-    $dbname = "BD_PARK";
+    $password = "";
+    $dbname = "bd_park";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
     $sql = "SELECT * FROM `tb_asignacion_reserva_temp` WHERE (`jornada`='MANANA' OR `jornada`='DIA') AND `ocupado_m`= 0 AND `ocupado_dia`= 0";
     $result = $conn->query($sql);
@@ -147,8 +340,8 @@ function asignar_tarde($id_usuario, $id_reserva){
     $servername = "localhost";
     $username = "root";
     //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
-    $dbname = "BD_PARK";
+    $password = "";
+    $dbname = "bd_park";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
     $sql = "SELECT * FROM `tb_asignacion_reserva_temp` WHERE (`jornada`='TARDE' OR `jornada`='DIA') AND `ocupado_t`= 0 AND `ocupado_dia`= 0";
     $result = $conn->query($sql);
@@ -172,8 +365,8 @@ function asignar_dia($id_usuario, $id_reserva){
     $servername = "localhost";
     $username = "root";
     //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
-    $dbname = "BD_PARK";
+    $password = "";
+    $dbname = "bd_park";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
     $sql = "SELECT * FROM `tb_asignacion_reserva_temp` WHERE  `jornada`='DIA' AND `ocupado_dia`= 0 AND `ocupado_t`= 0 AND `ocupado_m`= 0";
     $result = $conn->query($sql);
@@ -200,8 +393,8 @@ function actulizar_registro_reserva($id_user, $campo, $id_tb_temp, $id_reserva, 
     $servername = "localhost";
     $username = "root";
     //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
-    $dbname = "BD_PARK";
+    $password = "";
+    $dbname = "bd_park";
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);
     // Check connection
@@ -230,8 +423,8 @@ function actulizar_registro_reserva_asignada($id_reserva, $id_user, $id_espacio)
     $servername = "localhost";
     $username = "root";
     //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
-    $dbname = "BD_PARK";
+    $password = "";
+    $dbname = "bd_park";
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);
     // Check connection
@@ -255,16 +448,14 @@ function asignar_espacio($id_espacio, $id_user){
     $servername = "localhost";
     $username = "root";
     //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
-    $dbname = "BD_PARK";
+    $password = "";
+    $dbname = "bd_park";
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);
     // Check connection
-
-    $validacion = consultar_si_exite_tb_temp_usuario_2($id_espacio);
-    echo $validacion.' HV' . '<br>';
+    //$validacion = consultar_si_exite_tb_temp_usuario($id_espacio);
+    //echo $validacion.' HV' . '<br>';
     echo 'espacio id, user: '.$id_espacio .''. $id_user. '<br>';
-    if($validacion=="vacio"){
         $sql="INSERT INTO `tb_temp_usuario` (`id_temp`, `fecha`, `estado`, `id_usuario`, `id_espacio`)
         VALUES (NULL, '".date("d/m/Y")."', '1', $id_user, $id_espacio);";
         echo $sql .'<br>';
@@ -273,16 +464,14 @@ function asignar_espacio($id_espacio, $id_user){
         } else {
             echo "Error: " . $sql . "<br>" . mysqli_error($conn);
         }        
-    }
-
 }
 //validar si ya se esta usando el parquedero evistar duplicidad
 function consultar_si_exite_tb_temp_usuario_2($id_espacio){
     $servername = "localhost";
     $username = "root";
     //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
-    $dbname = "BD_PARK";
+    $password = "";
+    $dbname = "bd_park";
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);
     // Check connection
