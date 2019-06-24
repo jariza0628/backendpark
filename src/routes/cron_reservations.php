@@ -25,7 +25,7 @@
 date_default_timezone_set('America/Bogota');
 $servername = "localhost";
 $username = "root";
-$password = "Mysqlparkbd";
+//$password = "Mysqlparkbd";
 $password = "";
 $dbname = "BD_PARK";
 

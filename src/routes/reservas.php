@@ -62,6 +62,27 @@ $app->post('/api/reservations', function(Request $request, Response $response){
                     ->withHeader('Content-Type', 'application/json')
                     ->write(json_encode($data));
 });
+//Actulizar player ID
+$app->post('/api/playerid', function(Request $request, Response $response){
+    $playerid = $request->getParam('playerid');
+    $iduser = $request->getParam('iduser');
+    $result = actualizar_playerId($iduser, $playerid);
+    
+    if($result === true){
+        $arr = array('message' => 'Actualizado');
+        return $response->withStatus(200)
+        ->withHeader('Content-Type', 'application/json')
+        ->write(json_encode($arr));
+
+    }else{
+        $arr = array('message' => 'Error al actualizar');
+        echo $result;
+        return $response->withStatus(201)
+        ->withHeader('Content-Type', 'application/json')
+        ->write(json_encode($arr));
+    }
+});
+    
 /**
  * ****** Reservas despues de ejecutador el archivo cron_reservation.php ************
  * Se tiene en cuentas: 
@@ -490,6 +511,36 @@ function consultar_si_exite_tb_temp_usuario_2($id_espacio){
     } else {
         //echo "0 results";
         $resultado = "vacio";
+    }
+    return $resultado;
+}
+/**
+ * Actulizar PlayerId usuario 
+ * Nora: se guardara en el coampo token
+ * para no modificar la estrucura de la tabla, el campo no tenia uso.
+ */
+function actualizar_playerId($id_user, $player_id){
+    $servername = "localhost";
+    $username = "root";
+    //$password = "Mysqlparkbd";
+    $password = "";
+    $dbname = "bd_park";
+    // Create connection
+    $conn = new mysqli($servername, $username, $password, $dbname);
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+    $sql = "UPDATE `tb_usuario` 
+    SET `token` = '".$player_id."' 
+    WHERE `tb_usuario`.`id_usuario` = $id_user;";  
+
+    echo $sql;
+
+    if ($conn->query($sql) === TRUE) {
+        $resultado =  true;
+     } else {
+        $resultado =  "Error updating record: " . $conn->error;
     }
     return $resultado;
 }
