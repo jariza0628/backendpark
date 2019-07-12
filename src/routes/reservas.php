@@ -35,6 +35,18 @@ $app->get('/api/reservations/asg/{iduser}', function(Request $request, Response 
                     ->write(json_encode($data));
  
 });
+// Numero de reservas asignadas
+$app->get('/api/reservationsnumber', function(Request $request, Response $response){
+    $id = $request->getAttribute('iduser');
+    $sql = "SELECT COUNT(*) As total FROM `tb_reservas` WHERE `estado` = 'ASIGNADO'
+    ";
+    
+    $data =  getFechAll($sql);
+    return $response->withStatus(200)
+                    ->withHeader('Content-Type', 'application/json')
+                    ->write(json_encode($data));
+ 
+});
 //eliminar reservas
 $app->delete('/api/reservations/{id}', function(Request $request, Response $response){
     $id = $request->getAttribute('id');
@@ -82,7 +94,7 @@ $app->post('/api/playerid', function(Request $request, Response $response){
         ->write(json_encode($arr));
     }
 });
-    
+ 
 /**
  * ****** Reservas despues de ejecutador el archivo cron_reservation.php ************
  * Se tiene en cuentas: 
@@ -310,14 +322,18 @@ function asignar_reservas(){
             if($row["jornada"]==='TODO EL DIA'){
                 echo 'Encontro reserva DIA'. "<br>";
                 asignar_dia($row["tb_usuario_id_usuario"], $row["id_reserva"]);
+                /*** Notiicar reserva al usuario */
+                send_push_by_isuser($row["tb_usuario_id_usuario"],  "Tu reserva a sido asignada para todo el dia.");
             }
             if($row["jornada"]==='MAÑANA'){
                 echo 'Encontro reserva MAÑANA'. "<br>";
                 asignar_manana($row["tb_usuario_id_usuario"], $row["id_reserva"]);
+                send_push_by_isuser($row["tb_usuario_id_usuario"],  "Tu reserva a sido asignada para la mañana.");
             }
             if($row["jornada"]==='TARDE'){
                 echo 'Encontro reserva TARDE'. "<br>";
                 asignar_tarde($row["tb_usuario_id_usuario"], $row["id_reserva"]);
+                send_push_by_isuser($row["tb_usuario_id_usuario"],  "Tu reserva a sido asignada para la tarde.");
             }
         
         }
@@ -544,4 +560,41 @@ function actualizar_playerId($id_user, $player_id){
     }
     return $resultado;
 }
+
+function obtner_token_playerid($iduser){//validar si ya se esta usando el parquedero evistar duplicidad
+         
+    $resultado = ""; 
+    $sql="SELECT `token` FROM `tb_usuario` WHERE `id_usuario` = $iduser";
+    //echo $sql."<br>";
+    try{
+        // Get DB Object
+            $db = new db();
+            // Connect
+            $db = $db->connect();
+            $stmt = $db->query($sql);
+            foreach($stmt as $row)
+            $player = $row[0];
+            $result = $stmt->fetchAll(PDO::FETCH_OBJ);
+            $db = null;
+            //echo 'echo CF '. $id_espacio . '<br>';
+            if($player){
+                $resultado = $player;
+            }else{ $resultado = "vacio";}
+        } catch(PDOException $e){
+                //echo '{"error": {"text": '.$e->getMessage().'}';
+                $resultado = $e->getMessage();
+        }
+       //echo $resultado;
+       return $resultado;
+}
+function send_push_by_isuser($iduser, $msj){
+    $playerId = obtner_token_playerid($iduser);
+    if($playerId){
+        $res = sendMessageByPlayerId($msj, 'fb175834-d0c9-4d86-a697-67eb887ffe7b');
+    }else{
+
+    }
+}
+
+
 ?>
