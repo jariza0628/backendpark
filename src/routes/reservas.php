@@ -139,8 +139,8 @@ $app->get('/api/reservationsafter', function(Request $request, Response $respons
         if($hora > $hora_permmitida){
             $servername = "localhost";
             $username = "root";
-            //$password = "Mysqlparkbd";
-            $password = "Mysqlparkbd";
+            //$password = "";
+            $password = "";
             $dbname = "bd_park";
             // Create connection
             $conn = mysqli_connect($servername, $username, $password, $dbname);
@@ -306,8 +306,8 @@ function obtener_id_usuario_por_id_espacio($idespacio){
 function asignar_reservas(){
     $servername = "localhost";
     $username = "root";
-    //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
+    //$password = "";
+    $password = "";
     $dbname = "bd_park";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
     if (!$conn) {
@@ -349,8 +349,8 @@ function asignar_reservas(){
 function asignar_manana($id_usuario, $id_reserva){
     $servername = "localhost";
     $username = "root";
-    //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
+    //$password = "";
+    $password = "";
     $dbname = "bd_park";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
     $sql = "SELECT * FROM `tb_asignacion_reserva_temp` WHERE (`jornada`='MANANA' OR `jornada`='DIA') AND `ocupado_m`= 0 AND `ocupado_dia`= 0";
@@ -376,8 +376,8 @@ function asignar_manana($id_usuario, $id_reserva){
 function asignar_tarde($id_usuario, $id_reserva){
     $servername = "localhost";
     $username = "root";
-    //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
+    //$password = "";
+    $password = "";
     $dbname = "bd_park";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
     $sql = "SELECT * FROM `tb_asignacion_reserva_temp` WHERE (`jornada`='TARDE' OR `jornada`='DIA') AND `ocupado_t`= 0 AND `ocupado_dia`= 0";
@@ -401,8 +401,8 @@ function asignar_tarde($id_usuario, $id_reserva){
 function asignar_dia($id_usuario, $id_reserva){
     $servername = "localhost";
     $username = "root";
-    //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
+    //$password = "";
+    $password = "";
     $dbname = "bd_park";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
     $sql = "SELECT * FROM `tb_asignacion_reserva_temp` WHERE  `jornada`='DIA' AND `ocupado_dia`= 0 AND `ocupado_t`= 0 AND `ocupado_m`= 0";
@@ -429,8 +429,8 @@ function actulizar_registro_reserva($id_user, $campo, $id_tb_temp, $id_reserva, 
     echo '$id_espacio', $id_espacio;
     $servername = "localhost";
     $username = "root";
-    //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
+    //$password = "";
+    $password = "";
     $dbname = "bd_park";
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);
@@ -459,8 +459,8 @@ function actulizar_registro_reserva($id_user, $campo, $id_tb_temp, $id_reserva, 
 function actulizar_registro_reserva_asignada($id_reserva, $id_user, $id_espacio){
     $servername = "localhost";
     $username = "root";
-    //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
+    //$password = "";
+    $password = "";
     $dbname = "bd_park";
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);
@@ -484,8 +484,8 @@ function asignar_espacio($id_espacio, $id_user){
     echo 'Asiar espacio entro <br>';
     $servername = "localhost";
     $username = "root";
-    //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
+    //$password = "";
+    $password = "";
     $dbname = "bd_park";
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);
@@ -506,8 +506,8 @@ function asignar_espacio($id_espacio, $id_user){
 function consultar_si_exite_tb_temp_usuario_2($id_espacio){
     $servername = "localhost";
     $username = "root";
-    //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
+    //$password = "";
+    $password = "";
     $dbname = "bd_park";
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);
@@ -538,8 +538,8 @@ function consultar_si_exite_tb_temp_usuario_2($id_espacio){
 function actualizar_playerId($id_user, $player_id){
     $servername = "localhost";
     $username = "root";
-    //$password = "Mysqlparkbd";
-    $password = "Mysqlparkbd";
+    //$password = "";
+    $password = "";
     $dbname = "bd_park";
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);

@@ -1076,8 +1076,8 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
     function actulizar_registro_reserva_desbloquear($id_usuario){
         $servername = "localhost";
         $username = "root";
-        //$password = "Mysqlparkbd";
-        $password = "Mysqlparkbd";
+        //$password = "";
+        $password = "";
         $dbname = "bd_park";
         $conn = mysqli_connect($servername, $username, $password, $dbname);
         $sql = "SELECT * FROM `tb_asignacion_reserva_temp` WHERE `ocupado_m` = '$id_usuario' OR `ocupado_t` = '$id_usuario' OR `ocupado_dia` = '$id_usuario' ";
@@ -1104,8 +1104,8 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
         echo '$id_espacio', $id_espacio;
         $servername = "localhost";
         $username = "root";
-        //$password = "Mysqlparkbd";
-        $password = "Mysqlparkbd";
+        //$password = "";
+        $password = "";
         $dbname = "bd_park";
         // Create connection
         $conn = new mysqli($servername, $username, $password, $dbname);

@@ -26,7 +26,7 @@ date_default_timezone_set('America/Bogota');
 $servername = "localhost";
 $username = "root";
 $password = "Mysqlparkbd";
-// $password = "";
+$password = "";
 $dbname = "BD_PARK";
 
 // Create connection
@@ -100,7 +100,7 @@ function asignar_reservas(){
     $servername = "localhost";
     $username = "root";
     $password = "Mysqlparkbd";
-    // $password = "";
+    $password = "";
     $dbname = "BD_PARK";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
     $sql = "SELECT * FROM `tb_reservas` WHERE `estado`='ACTIVA'";
@@ -136,7 +136,7 @@ function asignar_manana($id_usuario, $id_reserva){
     $servername = "localhost";
     $username = "root";
     $password = "Mysqlparkbd";
-    // $password = "";
+    $password = "";
     $dbname = "BD_PARK";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
     $sql = "SELECT * FROM `tb_asignacion_reserva_temp` WHERE (`jornada`='MANANA' OR `jornada`='DIA') AND `ocupado_m`= 0 AND `ocupado_dia`= 0";
