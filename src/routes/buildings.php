@@ -695,7 +695,10 @@ $app->get('/api/idSpaceNumberByuser/{iduser}', function(Request $request, Respon
         $stmt = $db->query($sql);
         $result = $stmt->fetch(PDO::FETCH_OBJ);
         $db = null;
-        echo json_encode($result);
+        //echo json_encode($result);
+        return $response->withStatus(200)
+        ->withHeader('Content-Type', 'application/json')
+        ->write(json_encode($result));
     } catch(PDOException $e){
         echo '{"error": {"text": '.$e->getMessage().'}';
     }
