@@ -679,6 +679,27 @@ $app->get('/api/idSpaceByuser/{iduser}', function(Request $request, Response $re
         echo '{"error": {"text": '.$e->getMessage().'}';
     }
 });
+/**
+ * Traer espacio por Id userio
+ */
+$app->get('/api/idSpaceNumberByuser/{iduser}', function(Request $request, Response $response){
+    $dia = date("d");$mes=date("m");$anio=date("Y");
+    $id = $request->getAttribute('iduser');
+    $sql="SELECT * FROM `tb_espacio` WHERE id_usuario='$id'";
+    //echo "<br>".$sql."<br>";
+    try{
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $result = $stmt->fetch(PDO::FETCH_OBJ);
+        $db = null;
+        echo json_encode($result);
+    } catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+    }
+});
 
 
 
