@@ -60,6 +60,15 @@ $app->get('/', function(Request $request, Response $response){
     }
 });
 
+//Parametros de apliacion
+$app->get('/api/parametros', function(Request $request, Response $response){
+    $sql = "SELECT * FROM `tb_parametros`";
+    $data =  getFechAll($sql);
+    return $response->withStatus(200)
+                    ->withHeader('Content-Type', 'application/json')
+                    ->write(json_encode($data));
+ 
+});
 // Get Single buildings
 $app->get('/api/building/{id}', function(Request $request, Response $response){
     $id = $request->getAttribute('id');
@@ -407,7 +416,7 @@ $app->delete('/api/delSpaceTmp/delete/{id}', function(Request $request, Response
         $stmt = $db->prepare($sql);
         $stmt->execute();
         $db = null;
-        
+        actulizar_registro_reserva_desbloquear($id);
         echo '{"notice": {"text": "Customer Deleted"}';
     } catch(PDOException $e){
         echo '{"error": {"text": '.$e->getMessage().'}';
@@ -465,6 +474,29 @@ $app->get('/api/SpacesOccupiedByUser/{id}', function(Request $request, Response 
     } catch(PDOException $e){
         echo '{"error": {"text": '.$e->getMessage().'}';
     }
+
+});
+/**
+ * verifica si exite liberacion de un espacio por fecha
+ */
+$app->get('/api/SpacesFreedByDate/{id}/{d}/{m}/{y}', function(Request $request, Response $response){
+   $dia = $request->getAttribute('d');
+   $mes= $request->getAttribute('m');
+   $anio= $request->getAttribute('y');
+   $id = $request->getAttribute('id');
+   $sql = "SELECT COUNT(*) AS ocupado FROM `tb_temp_usuario` WHERE `id_usuario`='$id' AND fecha = '".$dia."/".$mes."/".$anio."'";
+    try{
+       // Get DB Object
+       $db = new db();
+       // Connect
+       $db = $db->connect();
+       $stmt = $db->query($sql);
+       $result = $stmt->fetch(PDO::FETCH_OBJ);
+       $db = null;
+       echo json_encode($result);
+   } catch(PDOException $e){
+       echo '{"error": {"text": '.$e->getMessage().'}';
+   }
 
 });
 
@@ -643,6 +675,30 @@ $app->get('/api/idSpaceByuser/{iduser}', function(Request $request, Response $re
         $result = $stmt->fetch(PDO::FETCH_OBJ);
         $db = null;
         echo json_encode($result);
+    } catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+    }
+});
+/**
+ * Traer espacio por Id userio
+ */
+$app->get('/api/idSpaceNumberByuser/{iduser}', function(Request $request, Response $response){
+    $dia = date("d");$mes=date("m");$anio=date("Y");
+    $id = $request->getAttribute('iduser');
+    $sql="SELECT * FROM `tb_espacio` WHERE id_usuario='$id'";
+    //echo "<br>".$sql."<br>";
+    try{
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $result = $stmt->fetch(PDO::FETCH_OBJ);
+        $db = null;
+        //echo json_encode($result);
+        return $response->withStatus(200)
+        ->withHeader('Content-Type', 'application/json')
+        ->write(json_encode($result));
     } catch(PDOException $e){
         echo '{"error": {"text": '.$e->getMessage().'}';
     }
@@ -1037,4 +1093,62 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
           
             ";
             return $sql;
+    }
+    /**
+     * Eliminar registros asignados tb_asignacion_reserva_temp
+     */
+    function actulizar_registro_reserva_desbloquear($id_usuario){
+        $servername = "localhost";
+        $username = "root";
+        //$password = "";
+        $password = "";
+        $dbname = "bd_park";
+        $conn = mysqli_connect($servername, $username, $password, $dbname);
+        $sql = "SELECT * FROM `tb_asignacion_reserva_temp` WHERE `ocupado_m` = '$id_usuario' OR `ocupado_t` = '$id_usuario' OR `ocupado_dia` = '$id_usuario' ";
+        $result = $conn->query($sql);
+        $cont = 0;
+        if ($result->num_rows > 0) {
+            // output data of each row id_espacio
+            while($row = $result->fetch_assoc()) {
+                actulizar_registro_reserva_desbloquear_uno($id_usuario);
+                $cont = $cont + 1;
+            }
+        } else {
+            echo "0 results";
+        }
+        echo "Elimnados asignacion". $cont;
+        return $cont;
+        
+    }
+    /**
+     * Actualiza la tabla tb_asignacion_reserva_temp cuando un usuario libera un espacio
+     * asignado o selecionado uno a uno
+     */
+    function actulizar_registro_reserva_desbloquear_uno($id_user){
+        echo '$id_espacio', $id_espacio;
+        $servername = "localhost";
+        $username = "root";
+        //$password = "";
+        $password = "";
+        $dbname = "bd_park";
+        // Create connection
+        $conn = new mysqli($servername, $username, $password, $dbname);
+        // Check connection
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        } 
+       
+        $sql = "UPDATE `tb_asignacion_reserva_temp` SET `ocupado_t` = '0' 
+        WHERE `tb_asignacion_reserva_temp`.`ocupado_t` = '$id_user' OR
+        `tb_asignacion_reserva_temp`.`ocupado_m` = '$id_user' OR
+        `tb_asignacion_reserva_temp`.`ocupado_dia` = '$id_user'
+        ;";
+         echo $sql . "<br>";
+    
+        if ($conn->query($sql) === TRUE) {
+            echo "UPDATEs ";
+            actulizar_registro_reserva_asignada($id_reserva, $id_user, $id_espacio);
+        } else {
+            echo "Error updating record: " . $conn->error;
+        }
     }

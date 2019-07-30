@@ -35,6 +35,18 @@ $app->get('/api/reservations/asg/{iduser}', function(Request $request, Response 
                     ->write(json_encode($data));
  
 });
+// Numero de reservas asignadas
+$app->get('/api/reservationsnumber', function(Request $request, Response $response){
+    $id = $request->getAttribute('iduser');
+    $sql = "SELECT COUNT(*) As total FROM `tb_reservas` WHERE `estado` = 'ASIGNADO'
+    ";
+    
+    $data =  getFechAll($sql);
+    return $response->withStatus(200)
+                    ->withHeader('Content-Type', 'application/json')
+                    ->write(json_encode($data));
+ 
+});
 //eliminar reservas
 $app->delete('/api/reservations/{id}', function(Request $request, Response $response){
     $id = $request->getAttribute('id');
@@ -82,7 +94,7 @@ $app->post('/api/playerid', function(Request $request, Response $response){
         ->write(json_encode($arr));
     }
 });
-    
+ 
 /**
  * ****** Reservas despues de ejecutador el archivo cron_reservation.php ************
  * Se tiene en cuentas: 
@@ -127,7 +139,7 @@ $app->get('/api/reservationsafter', function(Request $request, Response $respons
         if($hora > $hora_permmitida){
             $servername = "localhost";
             $username = "root";
-            //$password = "Mysqlparkbd";
+            //$password = "";
             $password = "";
             $dbname = "bd_park";
             // Create connection
@@ -294,7 +306,7 @@ function obtener_id_usuario_por_id_espacio($idespacio){
 function asignar_reservas(){
     $servername = "localhost";
     $username = "root";
-    //$password = "Mysqlparkbd";
+    //$password = "";
     $password = "";
     $dbname = "bd_park";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
@@ -310,14 +322,18 @@ function asignar_reservas(){
             if($row["jornada"]==='TODO EL DIA'){
                 echo 'Encontro reserva DIA'. "<br>";
                 asignar_dia($row["tb_usuario_id_usuario"], $row["id_reserva"]);
+                /*** Notiicar reserva al usuario */
+                send_push_by_isuser($row["tb_usuario_id_usuario"],  "Tu reserva a sido asignada para todo el dia.");
             }
             if($row["jornada"]==='MAÑANA'){
                 echo 'Encontro reserva MAÑANA'. "<br>";
                 asignar_manana($row["tb_usuario_id_usuario"], $row["id_reserva"]);
+                send_push_by_isuser($row["tb_usuario_id_usuario"],  "Tu reserva a sido asignada para la mañana.");
             }
             if($row["jornada"]==='TARDE'){
                 echo 'Encontro reserva TARDE'. "<br>";
                 asignar_tarde($row["tb_usuario_id_usuario"], $row["id_reserva"]);
+                send_push_by_isuser($row["tb_usuario_id_usuario"],  "Tu reserva a sido asignada para la tarde.");
             }
         
         }
@@ -333,7 +349,7 @@ function asignar_reservas(){
 function asignar_manana($id_usuario, $id_reserva){
     $servername = "localhost";
     $username = "root";
-    //$password = "Mysqlparkbd";
+    //$password = "";
     $password = "";
     $dbname = "bd_park";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
@@ -360,7 +376,7 @@ function asignar_manana($id_usuario, $id_reserva){
 function asignar_tarde($id_usuario, $id_reserva){
     $servername = "localhost";
     $username = "root";
-    //$password = "Mysqlparkbd";
+    //$password = "";
     $password = "";
     $dbname = "bd_park";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
@@ -385,7 +401,7 @@ function asignar_tarde($id_usuario, $id_reserva){
 function asignar_dia($id_usuario, $id_reserva){
     $servername = "localhost";
     $username = "root";
-    //$password = "Mysqlparkbd";
+    //$password = "";
     $password = "";
     $dbname = "bd_park";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
@@ -413,7 +429,7 @@ function actulizar_registro_reserva($id_user, $campo, $id_tb_temp, $id_reserva, 
     echo '$id_espacio', $id_espacio;
     $servername = "localhost";
     $username = "root";
-    //$password = "Mysqlparkbd";
+    //$password = "";
     $password = "";
     $dbname = "bd_park";
     // Create connection
@@ -443,7 +459,7 @@ function actulizar_registro_reserva($id_user, $campo, $id_tb_temp, $id_reserva, 
 function actulizar_registro_reserva_asignada($id_reserva, $id_user, $id_espacio){
     $servername = "localhost";
     $username = "root";
-    //$password = "Mysqlparkbd";
+    //$password = "";
     $password = "";
     $dbname = "bd_park";
     // Create connection
@@ -468,7 +484,7 @@ function asignar_espacio($id_espacio, $id_user){
     echo 'Asiar espacio entro <br>';
     $servername = "localhost";
     $username = "root";
-    //$password = "Mysqlparkbd";
+    //$password = "";
     $password = "";
     $dbname = "bd_park";
     // Create connection
@@ -490,7 +506,7 @@ function asignar_espacio($id_espacio, $id_user){
 function consultar_si_exite_tb_temp_usuario_2($id_espacio){
     $servername = "localhost";
     $username = "root";
-    //$password = "Mysqlparkbd";
+    //$password = "";
     $password = "";
     $dbname = "bd_park";
     // Create connection
@@ -522,7 +538,7 @@ function consultar_si_exite_tb_temp_usuario_2($id_espacio){
 function actualizar_playerId($id_user, $player_id){
     $servername = "localhost";
     $username = "root";
-    //$password = "Mysqlparkbd";
+    //$password = "";
     $password = "";
     $dbname = "bd_park";
     // Create connection
@@ -544,4 +560,41 @@ function actualizar_playerId($id_user, $player_id){
     }
     return $resultado;
 }
+
+function obtner_token_playerid($iduser){//validar si ya se esta usando el parquedero evistar duplicidad
+         
+    $resultado = ""; 
+    $sql="SELECT `token` FROM `tb_usuario` WHERE `id_usuario` = $iduser";
+    //echo $sql."<br>";
+    try{
+        // Get DB Object
+            $db = new db();
+            // Connect
+            $db = $db->connect();
+            $stmt = $db->query($sql);
+            foreach($stmt as $row)
+            $player = $row[0];
+            $result = $stmt->fetchAll(PDO::FETCH_OBJ);
+            $db = null;
+            //echo 'echo CF '. $id_espacio . '<br>';
+            if($player){
+                $resultado = $player;
+            }else{ $resultado = "vacio";}
+        } catch(PDOException $e){
+                //echo '{"error": {"text": '.$e->getMessage().'}';
+                $resultado = $e->getMessage();
+        }
+       //echo $resultado;
+       return $resultado;
+}
+function send_push_by_isuser($iduser, $msj){
+    $playerId = obtner_token_playerid($iduser);
+    if($playerId){
+        $res = sendMessageByPlayerId($msj, 'fb175834-d0c9-4d86-a697-67eb887ffe7b');
+    }else{
+
+    }
+}
+
+
 ?>
