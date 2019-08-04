@@ -73,11 +73,11 @@ $app->post('/api/miles/redeem', function(Request $request, Response $response){
 
 });
  //Acumular millas
-    function acomularMillas($iduser, $numero_millas){
-        try {
+function acomularMillas($iduser, $numero_millas){
+    try {
             $sql ="
             INSERT INTO `tb_millas` 
-            (`id_millas`, `numero_millas`, `fecha`, `motivo`, `tb_usuario_id_usuario`) 
+            (`id_miXllas`, `numero_millas`, `fecha`, `motivo`, `tb_usuario_id_usuario`) 
             VALUES 
             (NULL, $numero_millas, CURRENT_TIMESTAMP, 'Liberacion', $iduser);
             ";

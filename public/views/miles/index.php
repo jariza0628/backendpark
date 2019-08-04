@@ -47,10 +47,11 @@ exit;
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-     <script src="../asset/js/ie-emulation-modes-warning.js"></script>
+    <script src="../asset/js/ie-emulation-modes-warning.js"></script>
     <link rel='stylesheet' href='http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.0/bootstrap-table.min.css'>
     <link rel='stylesheet' href='http://rawgit.com/vitalets/x-editable/master/dist/bootstrap3-editable/css/bootstrap-editable.css'>
-    <link rel="stylesheet" href="../miles/style.css">
+    <link rel="stylesheet" href="./style.css">
+
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -117,13 +118,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
           ?>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          
-
-          
-
-          <div class="container">
-          <h2 class="sub-header">Listado de fechas liberadas por usuarios</h2>
-
+        <div class="container">
+<h1>Millas</h1>
   
 <div id="toolbar">
 		<select class="form-control">
@@ -144,17 +140,17 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
         <!-- Titulos tabla -->
 		<tr>
 			<th data-field="state" data-checkbox="true"></th>
-			<th data-field="prenom" data-filter-control="select" data-sortable="true"># Estacionamiento</th>
-			<th data-field="date" data-filter-control="select" data-sortable="true">Usuario</th>
-			<th data-field="examen" data-filter-control="select" data-sortable="true">Nombre</th>
-			<th data-field="note"  data-filter-control="input" data-sortable="true">Fecha</th>
+			<th data-field="prenom" data-filter-control="input" data-sortable="true">Prénom</th>
+			<th data-field="date" data-filter-control="select" data-sortable="true">Date</th>
+			<th data-field="examen" data-filter-control="select" data-sortable="true">Examen</th>
+			<th data-field="note" data-sortable="true">Note</th>
 		</tr>
 	</thead>
 	<tbody>
         <?php
         // Bucle para mostrar info
         $i = 0;
-        $sql = "SELECT e.numero, CONCAT(c.dia, '/',c.mes,'/',c.anio) as 'fecha', u.email, CONCAT(u.nombre, ' ', u.apellido) as nombre FROM `tb_calendario` c, tb_usuario u, tb_espacio e WHERE c.id_espacio = e.id_espacio AND e.id_usuario = u.id_usuario ORDER BY c.id_calendario DESC";
+        $sql = "SELECT CONCAT(u.nombre, ' ', u.apellido) as nombre, m.numero_millas, m.motivo, m.fecha FROM `tb_millas` as m INNER JOIN tb_usuario as u ON m.tb_usuario_id_usuario = u.id_usuario ORDER BY m.fecha DESC";
         $result = $conn->query($sql);
 
         if ($result->num_rows > 0) {
@@ -164,10 +160,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
         ?>
 		<tr>
 			<td class="bs-checkbox "><input data-index="<?php echo $i ?>" name="btSelectItem" type="checkbox"></td>
-      <td><?php echo $row["numero"] ?></td>
-      <td><?php echo $row["email"] ?></td>
-      <td><?php echo $row["nombre"] ?></td>
-      <td><?php echo $row["fecha"] ?></td>
+			<td><?php echo $row["nombre"] ?></td>
+			<td><?php echo $row["numero_millas"] ?></td>
+			<td><?php echo $row["motivo"] ?></td>
+			<td><?php echo $row["fecha"] ?></td>
 		</tr>
         <?php
         // Fin bucle
@@ -181,8 +177,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 	</tbody>
 </table>
 </div>
-       
-          
+         
+           
         </div>
       </div>
     </div>
@@ -243,6 +239,5 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     <script src='http://rawgit.com/hhurz/tableExport.jquery.plugin/master/tableExport.js'></script>
     <script src='http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/extensions/filter-control/bootstrap-table-filter-control.js'></script>
     <script  src="./script.js"></script>
-  
 
 </body></html>

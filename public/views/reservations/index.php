@@ -47,10 +47,11 @@ exit;
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-     <script src="../asset/js/ie-emulation-modes-warning.js"></script>
+    <script src="../asset/js/ie-emulation-modes-warning.js"></script>
     <link rel='stylesheet' href='http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.0/bootstrap-table.min.css'>
     <link rel='stylesheet' href='http://rawgit.com/vitalets/x-editable/master/dist/bootstrap3-editable/css/bootstrap-editable.css'>
-    <link rel="stylesheet" href="../miles/style.css">
+    <link rel="stylesheet" href="./style.css">
+
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -117,72 +118,136 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
           ?>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          
+        <div class="container">
+        <h1>Reservas</h1>
+        <!-- Rows -->
+        <div class="row">
+          <div class="col-xs-12 col-md-5">
+          <h4>Reservas Activas para hoy</h4>
 
-          
+          <div id="toolbar">
+            <select class="form-control">
+                <option value="">Export Basic</option>
+                <option value="all">Export All</option>
+                <option value="selected">Export Selected</option>
+            </select>
+        </div>
 
-          <div class="container">
-          <h2 class="sub-header">Listado de fechas liberadas por usuarios</h2>
+        <table id="table" 
+              data-toggle="table"
+              data-search="true"
+              data-filter-control="true" 
+              data-show-export="true"
+              data-click-to-select="true"
+              data-toolbar="#toolbar">
+          <thead>
+                <!-- Titulos tabla -->
+            <tr>
+              <th data-field="state" data-checkbox="true"></th>
+              <th data-field="prenom" data-filter-control="input" data-sortable="true">Usuario</th>
+              <th data-field="date" data-filter-control="select" data-sortable="true">Jornada</th>
+              <th data-field="examen" data-filter-control="select" data-sortable="true">Fecha</th>
+              <th data-field="note" data-sortable="true">Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+          <?php
+          // Bucle para mostrar info
+          $i = 0;
+          $sql = "SELECT tb_reservas.id_reserva, tb_reservas.fecha_creacion, tb_reservas.jornada, tb_usuario.email, tb_reservas.estado FROM `tb_reservas` INNER JOIN tb_usuario ON tb_reservas.tb_usuario_id_usuario = tb_usuario.id_usuario";
+          $result = $conn->query($sql);
+          if ($result->num_rows > 0) {
+              // output data of each row
+              while($row = $result->fetch_assoc()) {
+             ?>
+            <tr>
+              <td class="bs-checkbox "><input data-index="<?php echo $i ?>" name="btSelectItem" type="checkbox"></td>
+              <td><?php echo $row["email"] ?></td>
+              <td><?php echo $row["jornada"] ?></td>
+              <td><?php echo $row["fecha_creacion"] ?></td>
+              <td><?php echo $row["estado"] ?></td>
+            </tr>
+                <?php
+                // Fin bucle
+                $i = $i + 1;
+                  }
+                } else {
+                    echo "0 results";
+                }
+                ?>
 
-  
-<div id="toolbar">
-		<select class="form-control">
-				<option value="">Export Basic</option>
-				<option value="all">Export All</option>
-				<option value="selected">Export Selected</option>
-		</select>
-</div>
+          </tbody>
+        </table>
+          </div>
+          <!-- Col 2 ********************************************************************************
+          ****************************************************************************************** -->
+          <div class="col-xs-12 col-md-7">
+          <h4>Asinaciones realizadas actualmente</h4>
 
-<table id="table" 
-			 data-toggle="table"
-			 data-search="true"
-			 data-filter-control="true" 
-			 data-show-export="true"
-			 data-click-to-select="true"
-			 data-toolbar="#toolbar">
-	<thead>
-        <!-- Titulos tabla -->
-		<tr>
-			<th data-field="state" data-checkbox="true"></th>
-			<th data-field="prenom" data-filter-control="select" data-sortable="true"># Estacionamiento</th>
-			<th data-field="date" data-filter-control="select" data-sortable="true">Usuario</th>
-			<th data-field="examen" data-filter-control="select" data-sortable="true">Nombre</th>
-			<th data-field="note"  data-filter-control="input" data-sortable="true">Fecha</th>
-		</tr>
-	</thead>
-	<tbody>
-        <?php
-        // Bucle para mostrar info
-        $i = 0;
-        $sql = "SELECT e.numero, CONCAT(c.dia, '/',c.mes,'/',c.anio) as 'fecha', u.email, CONCAT(u.nombre, ' ', u.apellido) as nombre FROM `tb_calendario` c, tb_usuario u, tb_espacio e WHERE c.id_espacio = e.id_espacio AND e.id_usuario = u.id_usuario ORDER BY c.id_calendario DESC";
-        $result = $conn->query($sql);
+          <div id="toolbar2">
+            <select class="form-control">
+                <option value="">Export Basic</option>
+                <option value="all">Export All</option>
+                <option value="selected">Export Selected</option>
+            </select>
+        </div>
 
-        if ($result->num_rows > 0) {
-            // output data of each row
-            while($row = $result->fetch_assoc()) {
-     
-        ?>
-		<tr>
-			<td class="bs-checkbox "><input data-index="<?php echo $i ?>" name="btSelectItem" type="checkbox"></td>
-      <td><?php echo $row["numero"] ?></td>
-      <td><?php echo $row["email"] ?></td>
-      <td><?php echo $row["nombre"] ?></td>
-      <td><?php echo $row["fecha"] ?></td>
-		</tr>
-        <?php
-        // Fin bucle
-        $i = $i + 1;
-          }
-        } else {
-            echo "0 results";
-        }
-        ?>
+        <table id="table2" 
+              data-toggle="table"
+              data-search="true"
+              data-filter-control="true" 
+              data-show-export="true"
+              data-click-to-select="true"
+              data-toolbar="#toolbar2">
+          <thead>
+                <!-- Titulos tabla -->
+            <tr>
+              <th data-field="state" data-checkbox="true"></th>
+              <th data-field="prenom" data-filter-control="input" data-sortable="true"># Estacionamineto</th>
+              <th data-field="date" data-filter-control="select" data-sortable="true">Jornada</th>
+              <th data-field="examen" data-filter-control="select" data-sortable="true">Asignacion Mañana</th>
+              <th data-field="t" data-filter-control="select" data-sortable="true">Asignacion Tarde</th>
+              <th data-field="d" data-filter-control="select" data-sortable="true">Asignacion Dia</th>
+              <th data-field="note" data-sortable="true">Fecha</th>
+            </tr>
+          </thead>
+          <tbody>
+          <?php
+          // Bucle para mostrar info
+          $i = 0;
+          $sql = "SELECT * FROM `tb_asignacion_reserva_temp`";
+          $result = $conn->query($sql);
+          if ($result->num_rows > 0) {
+              // output data of each row
+              while($row = $result->fetch_assoc()) {
+             ?>
+            <tr>
+              <td class="bs-checkbox "><input data-index="<?php echo $i ?>" name="btSelectItem" type="checkbox"></td>
+              <td><?php echo $row["numero_espacio"] ?></td>
+              <td><?php echo $row["jornada"] ?></td>
+              <td><?php echo $row["ocupado_m"] ?></td>
+              <td><?php echo $row["ocupado_t"] ?></td>
+              <td><?php echo $row["ocupado_dia"] ?></td>
+              <td><?php echo $row["fecha"] ?></td>
+            </tr>
+                <?php
+                // Fin bucle
+                $i = $i + 1;
+                  }
+                } else {
+                    echo "0 results";
+                }
+                ?>
 
-	</tbody>
-</table>
-</div>
-       
-          
+          </tbody>
+        </table>
+          </div>
+        </div>
+        <!-- End Rows -->
+        
+        </div>
+         
+           
         </div>
       </div>
     </div>
@@ -230,7 +295,9 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-
+    <script src="../asset/js/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="../../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="../asset/js/bootstrap.min.js"></script>
     <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
     <script src="../asset/js/holder.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
@@ -243,6 +310,5 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     <script src='http://rawgit.com/hhurz/tableExport.jquery.plugin/master/tableExport.js'></script>
     <script src='http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/extensions/filter-control/bootstrap-table-filter-control.js'></script>
     <script  src="./script.js"></script>
-  
 
 </body></html>

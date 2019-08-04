@@ -168,7 +168,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
           		<input type="text" class="form-control" name="id"   value="<?php echo $_GET['id'] ?>" style="visibility: hidden;">
 				  <div class="form-group">
 				    <label for="inputEmail3" class="col-sm-2 control-label">Usuario</label>
-				    <div class="col-sm-10">
+				    <div class="col-sm-4">
 				      
 				      <input type="text" class="form-control" name="user" id="" placeholder="Usuario" value="<?php echo $user ?>" required>
 				    </div>
@@ -187,8 +187,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 				  </div>
 				  <div class="form-group">
 				    <label for="inputEmail3" class="col-sm-2 control-label">Rol</label>
-				    <div class="col-sm-10">
-				      <select class="form-control" name="rol">
+				    <div class="col-sm-5">
+				      <select class="form-control" name="rol" id="rol" onchange="myFunction()">
 						  <option value="<?php echo $rol ?>"><?php echo $name_rol ?></option>
 						  <option value="2">Usuario con espacio</option>
 						  <option value="3">Usuario Sin espacio</option>
@@ -196,6 +196,40 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 						</select>
 				    </div>
 				  </div>
+          <!-- Se cargan los espacios libres si el usuario no tiene asignado y el usuario selecion la op 2 o 4 del select -->
+          <?php 
+          // Solo se muestra si el usuario no tiene espacio
+          if($rol == '3'){
+          ?>
+          <div class="form-group" id="espacioslibres" style="display: none">
+				    <label for="inputEmail3" class="col-sm-2 control-label"># Estacionamiento:</label>
+				    <div class="col-sm-3">
+				      <select class="form-control" name="associar_espacio_id">
+              <?php
+                $sql = "SELECT * FROM `tb_espacio` WHERE `estado`= '3' AND `id_usuario` IS NULL";
+                $result = $conn->query($sql);
+
+                if ($result->num_rows > 0) {
+                    // output data of each row
+                    while($row = $result->fetch_assoc()) {
+                        ?>
+                        <option value="<?php echo $row['id_espacio'] ?>"><?php echo $row['numero'] ?></option>
+                        <?php
+                    }
+                } else {
+                  ?>
+                  <option value="0">No hay espacios disponibles</option>
+                  <?php
+                }
+              ?>
+            
+
+						</select>
+				    </div>
+				  </div>
+          <?php
+           } // Fin if rol = 3
+          ?>      
 				  <div class="form-group">
 				    <div class="col-sm-offset-2 col-sm-10">
 				      <div class="checkbox">
@@ -292,6 +326,15 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
             element.style.display='none';
         }
     }
+    function myFunction() {
+      var x = document.getElementById("rol").value;
+       var espacioslibres = document.getElementById("espacioslibres");
+      if(x=='2' || x=='4'){
+        espacioslibres.style.display='block';
+      }else{
+        espacioslibres.style.display='none';
+      }
+     }
 	</script>
     <script src="../asset/js/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="../../../assets/js/vendor/jquery.min.js"><\/script>')</script>

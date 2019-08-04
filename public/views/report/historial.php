@@ -48,6 +48,9 @@ exit;
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
     <script src="../asset/js/ie-emulation-modes-warning.js"></script>
+    <link rel='stylesheet' href='http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.0/bootstrap-table.min.css'>
+    <link rel='stylesheet' href='http://rawgit.com/vitalets/x-editable/master/dist/bootstrap3-editable/css/bootstrap-editable.css'>
+    <link rel="stylesheet" href="../miles/style.css">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -114,62 +117,67 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
           ?>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">Reportes</h1>
+        <div class="container">
+<h1>Historias de uso </h1>
+  <p>Muestra los usuario y el espacio usado con su fecha correspondiente</p>
+<div id="toolbar">
+		<select class="form-control">
+				<option value="">Export Basic</option>
+				<option value="all">Export All</option>
+				<option value="selected">Export Selected</option>
+		</select>
+</div>
 
-          
-
-          <h2 class="sub-header">Historial de espacios usados</h2>
-          
-       
-          <div class="table-responsive">
-
-          	<?php
-          	$sql = "SELECT log.`id_temp_log`, log.`fecha`, log.`estado`, u.email, CONCAT(u.nombre,' ',u.apellido) as nombre, e.numero 
+<table id="table" 
+			 data-toggle="table"
+			 data-search="true"
+			 data-filter-control="true" 
+			 data-show-export="true"
+			 data-click-to-select="true"
+			 data-toolbar="#toolbar">
+	<thead>
+        <!-- Titulos tabla -->
+		<tr>
+			<th data-field="state" data-checkbox="true"></th>
+			<th data-field="prenom" data-filter-control="input" data-sortable="true"># Estacionamiento</th>
+			<th data-field="date" data-filter-control="select" data-sortable="true">Nombre</th>
+			<th data-field="examen" data-filter-control="select" data-sortable="true">Usuario</th>
+			<th data-field="note" data-sortable="true"  data-filter-control="input">Fecha</th>
+		</tr>
+	</thead>
+	<tbody>
+        <?php
+        // Bucle para mostrar info
+        $i = 0;
+        $sql = "SELECT log.`id_temp_log`, log.`fecha`, log.`estado`, u.email, CONCAT(u.nombre,' ',u.apellido) as nombre, e.numero 
 				FROM `tb_temp_usuario_logs` log, tb_usuario u, tb_espacio e 
 				WHERE log.id_usuario = u.id_usuario AND e.id_espacio = log.id_espacio ORDER BY log.`id_temp_log` DESC";
-			
-          	?>
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Fecha</th>
-                  <th>Usuario</th>
-                  <th>Nombre</th>
-                  <th>Espacio</th>
-                </tr>
-              </thead>
-              <tbody>
-              <?php
-              $result = $conn->query($sql);
+        $result = $conn->query($sql);
 
-					if ($result->num_rows > 0) {
-					    // output data of each row
-					    while($row = $result->fetch_assoc()) {
-					    	
-					     ?>
-					      
-					      <tr>
-			                  <td><?php echo $row["id_temp_log"] ?></td>
-			                  <td><?php echo $row["fecha"] ?></td>
-			                  <td><?php echo $row["email"] ?></td>
-			                  <td><?php echo $row["nombre"] ?></td>
-			                  <td><?php echo $row["numero"] ?></td>
-			                  
-			                 
-			              </tr>
+        if ($result->num_rows > 0) {
+            // output data of each row
+            while($row = $result->fetch_assoc()) {
+     
+        ?>
+		<tr>
+			<td class="bs-checkbox "><input data-index="<?php echo $i ?>" name="btSelectItem" type="checkbox"></td>
+			<td><?php echo $row["numero"] ?></td>
+			<td><?php echo $row["nombre"] ?></td>
+      <td><?php echo $row["email"] ?></td>
+			<td><?php echo $row["fecha"] ?></td>
+		</tr>
+        <?php
+        // Fin bucle
+        $i = $i + 1;
+          }
+        } else {
+            echo "0 results";
+        }
+        ?>
 
-					     <?php
-					    }
-					} else {
-					    echo "0 results";
-					}
-			?>
-               
-              
-              </tbody>
-            </table>
-          </div>
+	</tbody>
+</table>
+</div>
         </div>
       </div>
     </div>
@@ -217,13 +225,19 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="../asset/js/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="../../../assets/js/vendor/jquery.min.js"><\/script>')</script>
-    <script src="../asset/js/bootstrap.min.js"></script>
+
     <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
     <script src="../asset/js/holder.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="../asset/js/ie10-viewport-bug-workaround.js"></script>
+    <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+    <script src='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'></script>
+    <script src='http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.0/bootstrap-table.js'></script>
+    <script src='http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/extensions/editable/bootstrap-table-editable.js'></script>
+    <script src='http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/extensions/export/bootstrap-table-export.js'></script>
+    <script src='http://rawgit.com/hhurz/tableExport.jquery.plugin/master/tableExport.js'></script>
+    <script src='http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/extensions/filter-control/bootstrap-table-filter-control.js'></script>
+    <script  src="./script.js"></script>
   
 
 </body></html>

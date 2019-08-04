@@ -47,10 +47,11 @@ exit;
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-     <script src="../asset/js/ie-emulation-modes-warning.js"></script>
+    <script src="../asset/js/ie-emulation-modes-warning.js"></script>
     <link rel='stylesheet' href='http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.0/bootstrap-table.min.css'>
     <link rel='stylesheet' href='http://rawgit.com/vitalets/x-editable/master/dist/bootstrap3-editable/css/bootstrap-editable.css'>
-    <link rel="stylesheet" href="../miles/style.css">
+    <link rel="stylesheet" href="./style.css">
+
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -117,14 +118,11 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
           ?>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          
+        <div class="container">
+<h1>Bootstrap Table</h1>
+<p> Mémo pour les options du Bootstrap Table : <a href="http://bootstrap-table.wenzhixin.net.cn/documentation/">Bootstrap Table Documentation</a></p>
+<p>Eléments de Bootstrap Table utilisés : <a href="http://jsfiddle.net/wenyi/e3nk137y/3178/">Data Checkbox</a>, pour cocher les éléments à sélectionner, <a href="https://github.com/wenzhixin/bootstrap-table-examples/blob/master/extensions/filter-control.html">extension Filter control</a>, pour les filtres via les colonnes, <a href="https://github.com/kayalshri/tableExport.jquery.plugin">extension Data export</a> pour exporter</p>
 
-          
-
-          <div class="container">
-          <h2 class="sub-header">Listado de fechas liberadas por usuarios</h2>
-
-  
 <div id="toolbar">
 		<select class="form-control">
 				<option value="">Export Basic</option>
@@ -144,45 +142,33 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
         <!-- Titulos tabla -->
 		<tr>
 			<th data-field="state" data-checkbox="true"></th>
-			<th data-field="prenom" data-filter-control="select" data-sortable="true"># Estacionamiento</th>
-			<th data-field="date" data-filter-control="select" data-sortable="true">Usuario</th>
-			<th data-field="examen" data-filter-control="select" data-sortable="true">Nombre</th>
-			<th data-field="note"  data-filter-control="input" data-sortable="true">Fecha</th>
+			<th data-field="prenom" data-filter-control="input" data-sortable="true">Prénom</th>
+			<th data-field="date" data-filter-control="select" data-sortable="true">Date</th>
+			<th data-field="examen" data-filter-control="select" data-sortable="true">Examen</th>
+			<th data-field="note" data-sortable="true">Note</th>
 		</tr>
 	</thead>
 	<tbody>
         <?php
         // Bucle para mostrar info
-        $i = 0;
-        $sql = "SELECT e.numero, CONCAT(c.dia, '/',c.mes,'/',c.anio) as 'fecha', u.email, CONCAT(u.nombre, ' ', u.apellido) as nombre FROM `tb_calendario` c, tb_usuario u, tb_espacio e WHERE c.id_espacio = e.id_espacio AND e.id_usuario = u.id_usuario ORDER BY c.id_calendario DESC";
-        $result = $conn->query($sql);
-
-        if ($result->num_rows > 0) {
-            // output data of each row
-            while($row = $result->fetch_assoc()) {
-     
+        $sql = "";
         ?>
 		<tr>
-			<td class="bs-checkbox "><input data-index="<?php echo $i ?>" name="btSelectItem" type="checkbox"></td>
-      <td><?php echo $row["numero"] ?></td>
-      <td><?php echo $row["email"] ?></td>
-      <td><?php echo $row["nombre"] ?></td>
-      <td><?php echo $row["fecha"] ?></td>
+			<td class="bs-checkbox "><input data-index="0" name="btSelectItem" type="checkbox"></td>
+			<td>Valérie</td>
+			<td>01/09/2015</td>
+			<td>Français</td>
+			<td>12/20</td>
 		</tr>
         <?php
         // Fin bucle
-        $i = $i + 1;
-          }
-        } else {
-            echo "0 results";
-        }
         ?>
 
 	</tbody>
 </table>
 </div>
-       
-          
+         
+           
         </div>
       </div>
     </div>
@@ -230,7 +216,9 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-
+    <script src="../asset/js/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="../../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="../asset/js/bootstrap.min.js"></script>
     <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
     <script src="../asset/js/holder.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
@@ -243,6 +231,5 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     <script src='http://rawgit.com/hhurz/tableExport.jquery.plugin/master/tableExport.js'></script>
     <script src='http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/extensions/filter-control/bootstrap-table-filter-control.js'></script>
     <script  src="./script.js"></script>
-  
 
 </body></html>

@@ -506,7 +506,7 @@ $app->get('/api/log/{data}/{data2}', function(Request $request, Response $respon
     //echo $email;
     //echo $clave;
     $sql="SELECT * FROM `tb_usuario` 
-    WHERE `email`='".$email."' AND `clave`='".md5($clave)."'";
+    WHERE `email`='".$email."' AND `clave`='".md5($clave)."' AND `estado`='1'";
     //echo "<br>".$sql."<br>";
     try{
         // Get DB Object

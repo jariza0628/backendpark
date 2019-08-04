@@ -48,6 +48,9 @@ exit;
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
     <script src="../asset/js/ie-emulation-modes-warning.js"></script>
+    <link rel='stylesheet' href='http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.0/bootstrap-table.min.css'>
+    <link rel='stylesheet' href='http://rawgit.com/vitalets/x-editable/master/dist/bootstrap3-editable/css/bootstrap-editable.css'>
+    <link rel="stylesheet" href="../miles/style.css">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -114,59 +117,69 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
           ?>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">Reportes</h1>
-
-          
-
-          <h2 class="sub-header">Listado de usuarios que estan utilizando espacios hoy</h2>
-          
-       
-          <div class="table-responsive">
-
-          	<?php
-           date_default_timezone_set('America/Bogota');
-            $dia = date("d");$mes=date("m");$anio=date("Y");
-            $sql = "SELECT e.numero, CONCAT(u.nombre, ' ', u.apellido) as nombre FROM `tb_temp_usuario` tem, tb_usuario u, tb_espacio e
-              WHERE tem.id_usuario = u.id_usuario AND tem.id_espacio = e.id_espacio AND
-              tem.fecha = '".$dia."/".$mes."/".$anio."'
-              ";
-                      
-			
-          	?>
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th># Numero estacionamiento</th>
-                  <th>Nombre</th>
                   
-                </tr>
-              </thead>
-              <tbody>
-              <?php
-              $result = $conn->query($sql);
+          <div class="container">
+  <h3>Listado de usuarios que estan utilizando espacios hoy</h3>
+<div id="toolbar">
+		<select class="form-control">
+				<option value="">Export Basic</option>
+				<option value="all">Export All</option>
+				<option value="selected">Export Selected</option>
+		</select>
+</div>
 
-					if ($result->num_rows > 0) {
-					    // output data of each row
-					    while($row = $result->fetch_assoc()) {
-					    	
-					     ?>
-					      <tr>
-			                  <td><?php echo $row["numero"] ?></td>
-			                  <td><?php echo $row["nombre"] ?></td>
-			                 
-			              </tr>
+<table id="table" 
+			 data-toggle="table"
+			 data-search="true"
+			 data-filter-control="true" 
+			 data-show-export="true"
+			 data-click-to-select="true"
+			 data-toolbar="#toolbar">
+	<thead>
+        <!-- Titulos tabla -->
+		<tr>
+			<th data-field="state" data-checkbox="true"></th>
+			<th data-field="prenom" data-filter-control="input" data-sortable="true"># Estacionamiento</th>
+			<th data-field="date" data-filter-control="select" data-sortable="true">Nombre</th>
+		 
+		</tr>
+	</thead>
+	<tbody>
+        <?php
+        // Bucle para mostrar info
+        $i = 0;
+        date_default_timezone_set('America/Bogota');
+        $dia = date("d");$mes=date("m");$anio=date("Y");
+        $sql = "SELECT e.numero, CONCAT(u.nombre, ' ', u.apellido) as nombre FROM `tb_temp_usuario` tem, tb_usuario u, tb_espacio e
+          WHERE tem.id_usuario = u.id_usuario AND tem.id_espacio = e.id_espacio AND
+          tem.fecha = '".$dia."/".$mes."/".$anio."'
+          ";
+                
+        $result = $conn->query($sql);
 
-					     <?php
-					    }
-					} else {
-					    echo "0 results";
-					}
-			?>
-               
-              
-              </tbody>
-            </table>
-          </div>
+        if ($result->num_rows > 0) {
+            // output data of each row
+            while($row = $result->fetch_assoc()) {
+     
+        ?>
+		<tr>
+			<td class="bs-checkbox "><input data-index="<?php echo $i ?>" name="btSelectItem" type="checkbox"></td>
+			<td><?php echo $row["numero"] ?></td>
+			<td><?php echo $row["nombre"] ?></td>
+ 
+		</tr>
+        <?php
+        // Fin bucle
+        $i = $i + 1;
+          }
+        } else {
+            echo "0 results";
+        }
+        ?>
+
+	</tbody>
+</table>
+</div>
         </div>
       </div>
     </div>
@@ -214,13 +227,19 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="../asset/js/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="../../../assets/js/vendor/jquery.min.js"><\/script>')</script>
-    <script src="../asset/js/bootstrap.min.js"></script>
+
     <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
     <script src="../asset/js/holder.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="../asset/js/ie10-viewport-bug-workaround.js"></script>
+    <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+    <script src='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'></script>
+    <script src='http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.0/bootstrap-table.js'></script>
+    <script src='http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/extensions/editable/bootstrap-table-editable.js'></script>
+    <script src='http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/extensions/export/bootstrap-table-export.js'></script>
+    <script src='http://rawgit.com/hhurz/tableExport.jquery.plugin/master/tableExport.js'></script>
+    <script src='http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/extensions/filter-control/bootstrap-table-filter-control.js'></script>
+    <script  src="../miles/script.js"></script>
   
 
 </body></html>

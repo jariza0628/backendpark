@@ -110,7 +110,6 @@ $app->post('/api/playerid', function(Request $request, Response $response){
 //asignar reservas ejecutar
 $app->get('/api/reservationsafter', function(Request $request, Response $response){
  
-    
     asignar_reserva_despues();
  
     $data = array('message' => 'Asignacion de reservas ejecutado');
