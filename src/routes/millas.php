@@ -72,6 +72,39 @@ $app->post('/api/miles/redeem', function(Request $request, Response $response){
     }
 
 });
+
+/****
+ * **************************************************
+ * **************USUARIOS****************************
+ * **************************************************
+ */
+$app->post('/api/newuser', function(Request $request, Response $response){
+    $user = $request->getParam('user');
+    $pass = $request->getParam('password');
+    $nombre = $request->getParam('name');
+    $apellido = $request->getParam('lastname');
+    // crear usuario sin estacionamiento
+    $validar_user = verificar_usuario($user);
+    //echo 'val '.$validar_user;
+    if($validar_user === "vacio"){
+
+        $sql="INSERT INTO `tb_usuario` (`id_usuario`, `email`, `clave`, `img`, `nombre`, `apellido`, `token`, `rol`, `estado`, `id_edificio`) VALUES
+        (NULL, '$user', '".md5($pass)."', 'user.png', '$nombre', '$apellido', NULL, '3', '1', '1')";
+        $data = insert($sql);
+        return $response->withStatus(201)
+                    ->withHeader('Content-Type', 'application/json')
+                    ->write(json_encode($data));
+    }else{
+        $array = array(
+            "data" => "Usuario no disponible",
+        );
+        return $response->withStatus(201)
+                    ->withHeader('Content-Type', 'application/json')
+                    ->write(json_encode($array));
+    }
+   
+});
+
  //Acumular millas
 function acomularMillas($iduser, $numero_millas){
     try {
@@ -176,6 +209,32 @@ function acomularMillas($iduser, $numero_millas){
             $arr = array('message' => $e->getMessage());
             return  $arr;
         }    
+    }
+
+    function verificar_usuario($username){
+        $resultado = ""; 
+        $sql="SELECT * FROM `tb_usuario` WHERE `email` = '$username'";
+        // echo $sql . '<br>';
+        try{
+        // Get DB Object
+            $db = new db();
+            // Connect
+            $db = $db->connect();
+            $stmt = $db->query($sql);
+            foreach($stmt as $row)
+            $numero = $row[0];
+            $result = $stmt->fetchAll(PDO::FETCH_OBJ);
+            $db = null;
+            //echo 'echo CF '. $numero . '<br>';
+            if($numero){
+                $resultado = $numero;
+            }else{ $resultado = "vacio";}
+        } catch(PDOException $e){
+                //echo '{"error": {"text": '.$e->getMessage().'}';
+                $resultado = $e->getMessage();
+        }
+        //echo $resultado;
+        return $resultado;
     }
 
 ?>
