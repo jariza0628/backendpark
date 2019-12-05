@@ -61,7 +61,7 @@ $app->delete('/api/reservations/{id}', function(Request $request, Response $resp
 });
 //crear reservas
 $app->post('/api/reservations', function(Request $request, Response $response){
-    $jornada = $request->getParam('jornada');
+    /* $jornada = $request->getParam('jornada');
     $iduser = $request->getParam('iduser');
 
     $sql = "INSERT INTO `tb_reservas` 
@@ -69,8 +69,11 @@ $app->post('/api/reservations', function(Request $request, Response $response){
     VALUES (NULL, CURRENT_TIMESTAMP, '$jornada', $iduser, 'ACTIVA');";
  
     $data = insert($sql);
-    asignar_reserva_despues();
-    return $response->withStatus(201)
+    asignar_reserva_despues(); 
+
+    */
+     $data = "[{'mess':'error'}]";
+    return $response->withStatus(204)
                     ->withHeader('Content-Type', 'application/json')
                     ->write(json_encode($data));
 });
