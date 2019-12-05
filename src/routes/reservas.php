@@ -63,10 +63,10 @@ $app->delete('/api/reservations/{id}', function(Request $request, Response $resp
 $app->post('/api/reservations', function(Request $request, Response $response){
     $jornada = $request->getParam('jornada');
     $iduser = $request->getParam('iduser');
-
+    $prioridad = $request->getParam('pri');
     $sql = "INSERT INTO `tb_reservas` 
-    (`id_reserva`, `fecha_creacion`, `jornada`, `tb_usuario_id_usuario`, `estado`) 
-    VALUES (NULL, CURRENT_TIMESTAMP, '$jornada', $iduser, 'ACTIVA');";
+    (`id_reserva`, `fecha_creacion`, `jornada`, `tb_usuario_id_usuario`, `estado`, `prioridad`) 
+    VALUES (NULL, CURRENT_TIMESTAMP, '$jornada', $iduser, 'ACTIVA', $prioridad);";
  
     $data = insert($sql);
     asignar_reserva_despues();
@@ -126,8 +126,11 @@ $app->get('/api/reservationsafter', function(Request $request, Response $respons
  * solo se registra para el mismo dia
  */
  function registrar_liberacion($d, $m, $a, $jornada, $espacioid){
+     
     $iduser =  obtener_id_usuario_por_id_espacio($espacioid);
     if($iduser!==""){
+        echo $iduser.'registrar_liberacion <br>';
+
         acomularMillas($iduser, '100');
     }
     $hora = strtotime(date("H:i:s")); 
@@ -312,7 +315,7 @@ function asignar_reservas(){
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
     }
-    $sql = "SELECT * FROM `tb_reservas` WHERE `estado`='ACTIVA'";
+    $sql = "SELECT * FROM `tb_reservas` WHERE `estado`='ACTIVA' ORDER BY `tb_reservas`.`prioridad` ASC";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
@@ -407,6 +410,8 @@ function asignar_dia($id_usuario, $id_reserva){
     $sql = "SELECT * FROM `tb_asignacion_reserva_temp` WHERE  `jornada`='DIA' AND `ocupado_dia`= 0 AND `ocupado_t`= 0 AND `ocupado_m`= 0";
     $result = $conn->query($sql);
 
+    $busco_manana = false;
+
     if ($result->num_rows > 0) {
         // output data of each row id_espacio
         while($row = $result->fetch_assoc()) {
@@ -416,7 +421,31 @@ function asignar_dia($id_usuario, $id_reserva){
             break; 
         }
     } else {
-        echo "0 results";
+        // echo "0 results";
+        /**
+         * Buscar si puede asignarle un tarde
+         */
+        $sql = "SELECT * FROM `tb_asignacion_reserva_temp` WHERE (`jornada`='TARDE' OR `jornada`='DIA')  AND `ocupado_t`= 0 AND `ocupado_dia`= 0";
+        $result = $conn->query($sql);
+    
+        if ($result->num_rows > 0) {
+            // output data of each row
+            while($row = $result->fetch_assoc()) {
+                echo 'econtro un lugar en reserva temp asignar_tarde <br>';
+                actulizar_registro_reserva($id_usuario, 'ocupado_t', $row["id_asignacion_temp"], $id_reserva, $row["id_espacio"]);
+                return 0;
+                break; 
+            }
+        } else {
+            // Buscar por lo menos una mañana
+            asignar_manana($id_usuario, $id_reserva);
+            $busco_manana = true;
+        }
+        //En caso de asignar la tarde no entraria en ell 'else' y por solo tener la tarde asignada
+        // se buscara una mañana
+        if($busco_manana === false){
+            asignar_manana($id_usuario, $id_reserva);
+        }
     }
     
 }

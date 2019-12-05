@@ -29,6 +29,7 @@ $apellido = $_POST['apellido'];
 $rol = $_POST['rol'];
 $pass1 = $_POST['pass1'];
 $pass2 = $_POST['pass2'];
+$prioridad = $_POST['prioridad'];
 if( $nombre != "" && $apellido !="" && $rol!="" && $user!=""){
 	
 	if($rol=='2' or $rol=='3' or $rol=='4'){//validar que los roles sean valido
@@ -46,8 +47,8 @@ if( $nombre != "" && $apellido !="" && $rol!="" && $user!=""){
  			
 			//insetar usuario sin espacio
  			if($rol=='3'){
- 				$sql="INSERT INTO `tb_usuario` (`id_usuario`, `email`, `clave`, `img`, `nombre`, `apellido`, `token`, `rol`, `estado`, `id_edificio`) VALUES
-				(NULL, '$user', '".md5($pass1)."', 'user.png', '$nombre', '$apellido', NULL, '$rol', '1', '1')";
+ 				$sql="INSERT INTO `tb_usuario` (`id_usuario`, `email`, `clave`, `img`, `nombre`, `apellido`, `token`, `rol`, `estado`, `id_edificio` , `prioridad`) VALUES
+				(NULL, '$user', '".md5($pass1)."', 'user.png', '$nombre', '$apellido', NULL, '$rol', '1', '1', '$prioridad')";
 				if ($conn->query($sql) === TRUE) {
 				    echo '
 				    <script type="text/javascript">
@@ -66,8 +67,8 @@ if( $nombre != "" && $apellido !="" && $rol!="" && $user!=""){
 
 			//insertar usario con espacio
  			if($rol=='2' && isset($_POST['space_free']) && $_POST['space_free']!="" ){
- 				$sql="INSERT INTO `tb_usuario` (`id_usuario`, `email`, `clave`, `img`, `nombre`, `apellido`, `token`, `rol`, `estado`, `id_edificio`) VALUES
-			(NULL, '$user', '".md5($pass1)."', 'user.png', '$nombre', '$apellido', NULL, '$rol', '1', '1')";
+ 				$sql="INSERT INTO `tb_usuario` (`id_usuario`, `email`, `clave`, `img`, `nombre`, `apellido`, `token`, `rol`, `estado`, `id_edificio`, `prioridad`) VALUES
+			(NULL, '$user', '".md5($pass1)."', 'user.png', '$nombre', '$apellido', NULL, '$rol', '1', '1', '$prioridad')";
 			if ($conn->query($sql) === TRUE) {
 					$last_id = mysqli_insert_id($conn);
 					//asignar espacio que este libre
@@ -97,8 +98,8 @@ if( $nombre != "" && $apellido !="" && $rol!="" && $user!=""){
 
 			//insertar usuario con espacio compartido;
 			if($rol=='4' && isset($_POST['space_free_com']) && $_POST['space_free_com']!="" ){
- 				$sql="INSERT INTO `tb_usuario` (`id_usuario`, `email`, `clave`, `img`, `nombre`, `apellido`, `token`, `rol`, `estado`, `id_edificio`) VALUES
-			(NULL, '$user', '".md5($pass1)."', 'user.png', '$nombre', '$apellido', NULL, '$rol', '1', '1')";
+ 				$sql="INSERT INTO `tb_usuario` (`id_usuario`, `email`, `clave`, `img`, `nombre`, `apellido`, `token`, `rol`, `estado`, `id_edificio`, `prioridad`) VALUES
+			(NULL, '$user', '".md5($pass1)."', 'user.png', '$nombre', '$apellido', NULL, '$rol', '1', '1', '$prioridad')";
 			if ($conn->query($sql) === TRUE) {
 				$last_id = mysqli_insert_id($conn);
 				$sql="UPDATE `tb_espacio` SET `estado` = '1', `id_usuario` = '$last_id' WHERE `tb_espacio`.`id_espacio` = ".$_POST['space_free_com']."";

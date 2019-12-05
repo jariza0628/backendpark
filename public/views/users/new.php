@@ -138,9 +138,20 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 				      <input type="text" class="form-control" name="apellido" id="" placeholder="Ariza" required>
 				    </div>
 				  </div>
+          <div class="form-group">
+				    <label for="inputEmail3" class="col-sm-2 control-label">Prioridad de reserva</label>
+				    <div class="col-sm-3">
+            <select class="form-control" name="prioridad" id="selecte2">
+				      	  <option value="0">Muy Alta</option>
+                  <option value="1">Alta</option>
+                  <option value="2">Media</option>
+                  <option value="3">Baja</option>
+						</select>			
+ 				    </div><!-- sd-->
+				  </div>
 				  <div class="form-group">
 				    <label for="inputEmail3" class="col-sm-2 control-label">Rol</label>
-				    <div class="col-sm-10">
+				    <div class="col-sm-3">
 				      <select class="form-control" name="rol" id="selecte" onchange="javascript:showConespacio()">
 				      	  <option value="3">Usuario Sin espacio</option>
 						  <option value="2">Usuario con espacio</option>

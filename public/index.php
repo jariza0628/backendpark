@@ -21,5 +21,5 @@ require 'src/routes/buildings.php';
 require 'src/routes/reservas.php'; 
 require 'src/routes/novedades.php'; 
 require 'src/routes/millas.php';
-//require '../src/routes/mail.php';  
+require 'src/routes/mail.php';  
 $app->run();

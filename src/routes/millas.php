@@ -110,10 +110,11 @@ function acomularMillas($iduser, $numero_millas){
     try {
             $sql ="
             INSERT INTO `tb_millas` 
-            (`id_miXllas`, `numero_millas`, `fecha`, `motivo`, `tb_usuario_id_usuario`) 
+            (`id_millas`, `numero_millas`, `fecha`, `motivo`, `tb_usuario_id_usuario`) 
             VALUES 
             (NULL, $numero_millas, CURRENT_TIMESTAMP, 'Liberacion', $iduser);
             ";
+            //echo $sql;
             //code...
                  // Get DB Object
             $db = new db();
@@ -140,7 +141,7 @@ function acomularMillas($iduser, $numero_millas){
             VALUES 
             (NULL, $numero_millas, CURRENT_TIMESTAMP, '$motivo', $iduser);
             ";
-            echo $sql;
+            //echo $sql;
             //code...
                  // Get DB Object
             $db = new db();
@@ -219,6 +220,7 @@ function acomularMillas($iduser, $numero_millas){
         // Get DB Object
             $db = new db();
             // Connect
+            $numero = null;
             $db = $db->connect();
             $stmt = $db->query($sql);
             foreach($stmt as $row)
@@ -226,9 +228,12 @@ function acomularMillas($iduser, $numero_millas){
             $result = $stmt->fetchAll(PDO::FETCH_OBJ);
             $db = null;
             //echo 'echo CF '. $numero . '<br>';
-            if($numero){
+            if(isset($numero) && $numero!=null){
                 $resultado = $numero;
-            }else{ $resultado = "vacio";}
+            }else
+            { 
+                $resultado = "vacio";
+            }
         } catch(PDOException $e){
                 //echo '{"error": {"text": '.$e->getMessage().'}';
                 $resultado = $e->getMessage();

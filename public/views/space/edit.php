@@ -22,40 +22,38 @@ echo "Su sesion a terminado,
 <a href='../login/login.php'>Necesita Hacer Login</a>";
 exit;
 }
-$nombre = "";
-$apellido = "";
+$id_espacio = "";
+$numero = "";
+$estado = "";
+$id_piso = "";
+$numero_piso = "";
+$id_user = "";
+$email = "";
 $rol = "";
-$user = "";
-$name_rol = "";
-$prioridadvalue;
 
 if(isset($_GET['id'])){
-	$sql = 'SELECT u.id_usuario,u.nombre, u.apellido, u.rol,  u.email, u.prioridad
-			FROM `tb_usuario` u
-			WHERE u.estado = 1 and u.id_usuario='.$_GET['id'].'';
+	$sql = 'SELECT 
+            e.id_espacio, e.numero, e.estado, e.id_piso, p.numero as piso, e.id_usuario, u.email, u.rol
+            FROM `tb_espacio` e 
+            INNER JOIN tb_usuario u ON e.`id_usuario` = u.id_usuario 
+            INNER JOIN tb_piso p ON e.id_piso = p.id_piso
+			WHERE e.estado = 1 and e.id_espacio='.$_GET['id'].'';
 			
 	$result = $conn->query($sql);
 
 	if ($result->num_rows > 0) {
 	    // output data of each row
 	    while($row = $result->fetch_assoc()) {
-	        $nombre = $row['nombre'];
-	        $apellido = $row['apellido'];
-          $prioridadvalue = $row['prioridad'];
+	    
 	        //roles 1 = administrador, 2 = usuario con espacio, 3 usuario sin espacio, 4 usuario con espacio conpartido
-	        $rol = $row['rol'];
-	        if($rol == 2){
-	        	$name_rol = "Usuario con espacio";
-	        }
-	        if($rol == 3){
-	        	$name_rol = "Usuario sin espacio";
-	        }
-	        if($rol == 4){
-	        	$name_rol = "Usuario con espacio compartido";
-	        }
-	        
-
-	        $user = $row['email'];
+            $id_espacio = $row['id_espacio'];
+            $numero = $row['numero'];
+            $estado = $row['estado'];
+            $id_piso = $row['id_piso'];
+            $numero_piso = $row['piso'];
+            $id_user = $row['id_usuario'];
+            $email = $row['email'];
+            $rol = $row['rol'];
 	    }
 	} else {
 	    echo "0 results";
@@ -156,65 +154,121 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
           ?>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">Editar Usuario</h1>
+          <h1 class="page-header">Editar Estacionamiento</h1>
 
           
 
-          <h2 class="sub-header">Usuario: <?php echo $user ?></h2>
+          <h2 class="sub-header">Estacionamiento: <?php echo $numero ?></h2>
          		<?php 
-         		if($nombre !="" && $apellido != "" && $rol !="" && $user != ""){
-
+         		if($numero !="" && $id_user != "" && $id_piso !="" && $email != ""){
+                    /**
+                     * $id_espacio = "";
+                        $numero = "";
+                        $estado = "";
+                        $id_piso = "";
+                        $numero = "";
+                        $id_user = "";
+                        $email = "";
+                        $rol = "";
+                     */
 
          		?>
           		<form class="form-horizontal" action="save_edit.php" method="POST">
+                <input type="text" class="form-control" name="id_user_actual"   value="<?php echo $id_user ?>" style="visibility: hidden;">
           		<input type="text" class="form-control" name="id"   value="<?php echo $_GET['id'] ?>" style="visibility: hidden;">
 				  <div class="form-group">
-				    <label for="inputEmail3" class="col-sm-2 control-label">Usuario</label>
+				    <label for="inputEmail3" class="col-sm-2 control-label">Numero Asignado</label>
 				    <div class="col-sm-4">
 				      
-				      <input type="text" class="form-control" name="user" id="" placeholder="Usuario" value="<?php echo $user ?>" required>
+				      <input type="text" class="form-control" name="numero" id="" placeholder="Usuario" value="<?php echo $numero ?>" required>
 				    </div>
 				  </div>
-				   <div class="form-group">
-				    <label for="inputEmail3" class="col-sm-2 control-label">Nombre</label>
-				    <div class="col-sm-10">
-				      <input type="text" class="form-control" name="nombre" id="" placeholder="Jeff" value="<?php echo $nombre ?>" required>
-				    </div>
-				  </div>
-				  <div class="form-group">
-				    <label for="inputEmail3" class="col-sm-2 control-label">Apellido</label>
-				    <div class="col-sm-10">
-				      <input type="text" class="form-control" name="apellido" id="" placeholder="Ariz" value="<?php echo $apellido ?>" required>
-				    </div>
-				  </div>
-          <div class="form-group">
-				    <label for="inputEmail3" class="col-sm-2 control-label">Prioridad de reserva</label>
+                  <div class="form-group">
+				    <label for="inputEmail3" class="col-sm-2 control-label">Estado</label>
 				    <div class="col-sm-5">
-				      <select class="form-control" name="prioridad" id="prioridad" >
-						  <option value="<?php echo $prioridadvalue ?>">
-              <?php 
-                if($prioridadvalue==='3'){
-                echo 'Baja'.' (Actual)';
-                }
-                if($prioridadvalue==='2'){
-                  echo 'Media'.' (Actual)';
-                }
-                if($prioridadvalue==='1'){
-                  echo 'Alta'.' (Actual)';
-                }
-                if($prioridadvalue==='0'){
-                  echo 'Muy Alta'.' (Actual)';
-                }
-             
-              ?>
-              </option>
-              <option value="0">Muy Alta</option>
-               <option value="1">Alta</option>
-               <option value="2">Media</option>
-               <option value="3">Baja</option>
+				      <select class="form-control" name="estado" id="estado" >
+						  <option value="<?php echo $estado ?>">
+                            <?php 
+                                if($estado==='1'){
+                                echo 'ACTIVO'.' (Actual)';
+                                }
+                                if($estado==='2'){
+                                echo 'INACTIVO'.' (Actual)';
+                                }
+                            ?>
+                            </option>
+                            <option value="1">ACTIVO</option>
+                            <option value="2">INACTIVO</option>
 						</select>
 				    </div>
 				  </div>
+                  <div class="form-group">
+				    <label for="inputEmail3" class="col-sm-2 control-label">Usuario asignado</label>
+				    <div class="col-sm-5">
+				      <select class="form-control" name="id_user_new" id="id_user_new" >
+						  <option value="<?php echo $id_user ?>">
+                            <?php 
+                                echo $email. '(Actual)';    
+                            ?>
+                            </option>
+                            <?php
+                            $sql = 	$sql="SELECT u.id_usuario, CONCAT(u.nombre, ' ', u.apellido)  as nombre,  u.email, 'No posee' as estacionamiento,  u.prioridad as prioridad
+                            FROM `tb_usuario` u WHERE u.estado = 1 AND u.rol=3";
+                                 $result = $conn->query($sql);
+
+                                 if ($result->num_rows > 0) {
+                                     // output data of each row
+                                     while($rows = $result->fetch_assoc()) {
+                                      ?>
+                                      <option value="<?php echo $rows["id_usuario"] ?>">
+                                      <?php echo $rows["email"] ?>
+                                        </option>
+                                       <?php
+                                     }
+                                 }
+                            ?>
+						</select>
+				    </div>
+                    <div class="col-sm-5">
+                         <?php
+                            if($rol==='4'){
+                                echo '<input type="checkbox" name="rol" checked> Usuario con espacio compartido';
+                            }else{
+                                echo '<input type="checkbox" name="rol"> Usuario con espacio compartido';
+    
+                            }
+                         ?>            
+                     </div>
+				  </div>
+                  <div class="form-group">
+				    <label for="inputEmail3" class="col-sm-2 control-label">Piso</label>
+				    <div class="col-sm-5">
+				      <select class="form-control" name="id_piso" id="id_piso" >
+						  <option value="<?php echo $id_piso ?>">
+                            <?php 
+                                echo $numero_piso.' (Actual)';    
+                            ?>
+                            </option>
+                            <?php
+                            $sql = 	$sql="SELECT * FROM `tb_piso` WHERE estado = 1";
+                                 $result = $conn->query($sql);
+
+                                 if ($result->num_rows > 0) {
+                                     // output data of each row
+                                     while($rows = $result->fetch_assoc()) {
+                                      ?>
+                                      <option value="<?php echo $rows["id_piso"] ?>">
+                                      <?php echo $rows["numero"] ?>
+                                        </option>
+                                       <?php
+                                     }
+                                 }
+                            ?>
+						</select>
+				    </div>
+				  </div>
+				 
+                   <!--                 
 				  <div class="form-group">
 				    <label for="inputEmail3" class="col-sm-2 control-label">Rol</label>
 				    <div class="col-sm-5">
@@ -225,7 +279,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 						  <option value="4">Usuario con espacio compartido</option>
 						</select>
 				    </div>
-				  </div>
+				  </div> -->
           <!-- Se cargan los espacios libres si el usuario no tiene asignado y el usuario selecion la op 2 o 4 del select -->
           <?php 
           // Solo se muestra si el usuario no tiene espacio
@@ -260,15 +314,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
           <?php
            } // Fin if rol = 3
           ?>      
-				  <div class="form-group">
-				    <div class="col-sm-offset-2 col-sm-10">
-				      <div class="checkbox">
-				        <label>
-				          <input type="checkbox" id="check" name="check" onchange="javascript:showContent()"> Cambiar contraseña
-				        </label>
-				      </div>
-				    </div>
-				  </div>
+			 
 				  <div id="pass" style="display: none">
 				  <div class="form-group">
 				    <label for="inputPassword3" class="col-sm-2 control-label">Password</label>

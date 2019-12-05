@@ -124,7 +124,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
           <div class="table-responsive">
 
           	<?php
-          	$sql = 'SELECT tb_espacio.`id_espacio`, tb_espacio.`numero`, tb_espacio.`estado`, tb_espacio.`id_usuario`, tb_piso.numero as piso FROM `tb_espacio`, tb_piso WHERE tb_espacio.id_piso = tb_piso.id_piso ORDER BY `tb_espacio`.`numero` ASC';
+          	$sql = 'SELECT e.id_espacio, e.numero, e.estado, e.id_piso, p.numero as piso, e.id_usuario, u.email FROM `tb_espacio` e INNER JOIN tb_usuario u ON e.`id_usuario` = u.id_usuario INNER JOIN tb_piso p ON e.id_piso = p.id_piso ORDER BY e.numero ASC';
 			
           	?>
             <table class="table table-hover">
@@ -134,6 +134,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
                   <th># Estacionamiento</th>
                   <th>Estado</th>
                   <th># Piso</th>
+                  <th>Usuario</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -161,8 +162,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 			                  <td><?php echo $row["numero"] ?></td>
 			                  <td><?php echo $estado ?></td>
 			                  <td><?php echo $row["piso"] ?></td>
-			                  
-			                  <td><a href="#>">Editar</a> <a href="#">Eliminar</a></td>
+			                  <td><?php echo $row["email"] ?></td>
+			                  <td><a href="edit.php?id=<?php echo $row["id_espacio"] ?>">Editar</a> <a href="#">Eliminar</a></td>
 			              </tr>
 
 					     <?php

@@ -103,7 +103,7 @@ function asignar_reservas(){
     // $password = "";
     $dbname = "BD_PARK";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
-    $sql = "SELECT * FROM `tb_reservas` WHERE `estado`='ACTIVA'";
+    $sql = "SELECT * FROM `tb_reservas` WHERE `estado`='ACTIVA' ORDER BY `tb_reservas`.`prioridad` ASC";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
