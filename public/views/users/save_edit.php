@@ -30,6 +30,7 @@ $nombre = $_POST['nombre'];
 $rol = $_POST['rol'];
 $pass1 = $_POST['pass1'];
 $pass2 = $_POST['pass2'];
+$prioridad = $_POST['prioridad'];
 $associar_espacio_id = $_POST['associar_espacio_id'];
 $sql="";
 if($idusuario!="" && $nombre != "" && $apellido !="" && $rol!="" && $user!=""){
@@ -41,7 +42,8 @@ if($idusuario!="" && $nombre != "" && $apellido !="" && $rol!="" && $user!=""){
 			SET `email` = '$user', 
 			`nombre` = '$nombre', 
 			`apellido` = '$apellido', 
-			`rol` = '$rol' 
+			`rol` = '$rol',
+			`prioridad` = '$prioridad'  
 			WHERE `tb_usuario`.`id_usuario` = $idusuario";
  		}elseif($pass1 != "" && $pass2 != "" && $_POST['check']==true && $pass1== $pass2){
 			$sql = "UPDATE `tb_usuario` 
@@ -49,7 +51,8 @@ if($idusuario!="" && $nombre != "" && $apellido !="" && $rol!="" && $user!=""){
 			`nombre` = '$nombre', 
 			`apellido` = '$apellido', 
 			`clave` = '".md5($pass1)."',
-			`rol` = '$rol' 
+			`rol` = '$rol',
+			`prioridad` = '$prioridad'  
 			WHERE `tb_usuario`.`id_usuario` = $idusuario";
 		}
 		if($sql!=""){
@@ -60,7 +63,7 @@ if($idusuario!="" && $nombre != "" && $apellido !="" && $rol!="" && $user!=""){
 			} else {
 				echo "Error updating record: " . $conn->error;
 			}
-			echo $sql;
+			// echo $sql;
 			echo '
 				<script type="text/javascript">
 					alert("Regsitro actualizado");

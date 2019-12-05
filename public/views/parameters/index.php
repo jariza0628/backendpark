@@ -22,6 +22,28 @@ echo "Su sesion a terminado,
 <a href='../login/login.php'>Necesita Hacer Login</a>";
 exit;
 }
+$asignacion_hora;
+$inicio_reservas;
+$activar_liberacion;
+$millas;
+$registro_usuarios;
+$sql = 'SELECT * FROM `tb_parametros`';
+			
+	$result = $conn->query($sql);
+
+	if ($result->num_rows > 0) {
+	    // output data of each row
+	    while($row = $result->fetch_assoc()) {
+        $asignacion_hora = $row['hora_asignacion'];
+        $inicio_reservas = $row['hora_reservas'];
+        $activar_liberacion = $row['modo_liberacion'];
+        $millas = $row['millas'];
+        $registro_usuarios = $row['registro_usuario'];
+         
+	    }
+	} else {
+	    echo "0 results";
+	}
 ?>
 <!DOCTYPE html>
 <!-- saved from url=(0053)https://getbootstrap.com/docs/3.3/examples/dashboard/ -->
@@ -119,53 +141,87 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
         <div class="container">
-<h1>Bootstrap Table</h1>
-<p> Mémo pour les options du Bootstrap Table : <a href="http://bootstrap-table.wenzhixin.net.cn/documentation/">Bootstrap Table Documentation</a></p>
-<p>Eléments de Bootstrap Table utilisés : <a href="http://jsfiddle.net/wenyi/e3nk137y/3178/">Data Checkbox</a>, pour cocher les éléments à sélectionner, <a href="https://github.com/wenzhixin/bootstrap-table-examples/blob/master/extensions/filter-control.html">extension Filter control</a>, pour les filtres via les colonnes, <a href="https://github.com/kayalshri/tableExport.jquery.plugin">extension Data export</a> pour exporter</p>
-
-<div id="toolbar">
-		<select class="form-control">
-				<option value="">Export Basic</option>
-				<option value="all">Export All</option>
-				<option value="selected">Export Selected</option>
-		</select>
-</div>
-
-<table id="table" 
-			 data-toggle="table"
-			 data-search="true"
-			 data-filter-control="true" 
-			 data-show-export="true"
-			 data-click-to-select="true"
-			 data-toolbar="#toolbar">
-	<thead>
-        <!-- Titulos tabla -->
-		<tr>
-			<th data-field="state" data-checkbox="true"></th>
-			<th data-field="prenom" data-filter-control="input" data-sortable="true">Prénom</th>
-			<th data-field="date" data-filter-control="select" data-sortable="true">Date</th>
-			<th data-field="examen" data-filter-control="select" data-sortable="true">Examen</th>
-			<th data-field="note" data-sortable="true">Note</th>
-		</tr>
-	</thead>
-	<tbody>
-        <?php
-        // Bucle para mostrar info
-        $sql = "";
-        ?>
-		<tr>
-			<td class="bs-checkbox "><input data-index="0" name="btSelectItem" type="checkbox"></td>
-			<td>Valérie</td>
-			<td>01/09/2015</td>
-			<td>Français</td>
-			<td>12/20</td>
-		</tr>
-        <?php
-        // Fin bucle
-        ?>
-
-	</tbody>
-</table>
+<h1>Parametros del sistema</h1>
+<p> Aqui podras habilitar y configurar la hora de asignacion de reservas, apartir de que hora se puiede hacer la primera reserva, habilitar millas o el modo tradicional de la apliación. </a></p>
+  <!--
+$asignacion_hora;
+$inicio_reservas;
+$activar_liberacion;
+$millas;
+$registro_usuarios;
+  -->
+<form class="form-horizontal" action="save_edit.php" method="POST">
+    <div class="form-group" >
+     <label style="text-align: left;" for="inputEmail3" class="col-xs-10 col-sm-3 control-label">Hora de asignacion</label>
+     <div class="col-xs-3 col-sm-2">
+     <select class="form-control" name="asignacion_hora" id="asignacion_hora" >
+              <option value="<?php echo $asignacion_hora ?>"><?php echo $asignacion_hora.':00 (Actual)' ?></option>
+              <?php
+                for ($i=1; $i < 24; $i++) { 
+                  ?>
+            <option value="<?php echo $i ?>"><?php echo $i.':00' ?></option>
+                  <?php
+                  # code...
+                }
+              ?>
+      </select>
+       </div>
+     </div>
+     <div class="form-group">
+     <label style="text-align: left;" for="inputEmail3" class="col-xs-10 col-sm-3 control-label">Hora de habilitacion de reservas</label>
+     <div class="col-xs-3 col-sm-2">
+         <select class="form-control" name="inicio_reservas" id="inicio_reservas" >
+              <option value="<?php echo $inicio_reservas ?>"><?php echo $inicio_reservas.':00 (Actual)' ?></option>
+              <?php
+                for ($i=1; $i < 24; $i++) { 
+                  ?>
+            <option value="<?php echo $i ?>"><?php echo $i.':00' ?></option>
+                  <?php
+                  # code...
+                }
+              ?>
+      </select>
+      </div>
+     </div>
+     <div class="form-group">
+     <label style="text-align: left;" for="inputEmail3" class="col-xs-10 col-sm-3 control-label">Moto Tradicional</label>
+     <div class="col-xs-3 col-sm-2">
+     <select class="form-control" name="activar_liberacion" id="activar_liberacion" >
+              <option value="<?php echo $activar_liberacion ?>"><?php echo $activar_liberacion.' (Actual)' ?></option>
+              <option value="NO">NO</option>
+              <option value="SI">SI</option>
+  
+      </select>      </div>
+     </div>
+     <div class="form-group">
+     <label style="text-align: left;" for="inputEmail3" class="col-xs-10 col-sm-3 control-label">Ocultar millas</label>
+     <div class="col-xs-3 col-sm-2">
+     <select class="form-control" name="millas" id="millas" >
+              <option value="<?php echo $millas ?>"><?php echo $millas.' (Actual)' ?></option>
+              <option value="NO">NO</option>
+              <option value="SI">SI</option>
+  
+      </select> 
+      </div>
+     </div>
+     <div class="form-group">
+     <label style="text-align: left;" for="inputEmail3" class="col-xs-10 col-sm-3 control-label">Habilitar registro de usuarios</label>
+     <div class="col-xs-3 col-sm-2">
+     <select class="form-control" name="registro_usuarios" id="registro_usuarios" >
+              <option value="<?php echo $registro_usuarios ?>"><?php echo $registro_usuarios.' (Actual)' ?></option>
+              <option value="NO">NO</option>
+              <option value="SI">SI</option>
+  
+      </select> 
+      </div>
+     </div>
+     <div class="form-group">
+				    <div class="col-sm-offset-2 col-xs-12 " style=" margin: 0;">
+				      <button type="submit" class="btn btn-default">Guardar</button>
+				    </div>
+				  </div>
+</form>
+ 
 </div>
          
            

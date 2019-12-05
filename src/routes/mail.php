@@ -9,17 +9,33 @@ require 'vendor/phpmailer/phpmailer/src/Exception.php';
 require 'vendor/phpmailer/phpmailer/src/PHPMailer.php';
 require 'vendor/phpmailer/PHPMailer/src/SMTP.php';
 
-$app->get('/api/sendmail', function(Request $request, Response $response){
-    sendMail();
-    $data = [
-        "MSJ" => "EJECUTADO"
-    ];
-    return $response->withStatus(200)
-    ->withHeader('Content-Type', 'application/json')
-    ->write(json_encode($data));
+$app->get('/api/sendmail/{user}', function(Request $request, Response $response){
+    $user = $request->getAttribute('user');
+    $validar_user = verificar_usuario($user);
+    // echo 'val '.$validar_user;
+    if($validar_user === "vacio"){
+        // Usuario no encomntrado
+        $data = [
+            "MSJ" => "Usuario no necontrado"
+        ];
+        return $response->withStatus(200)
+        ->withHeader('Content-Type', 'application/json')
+        ->write(json_encode($data));
+    }else{
+        $email = $user.'@transelca.com.co';
+        sendMail($email);
+        $data = [
+            "MSJ" => "EJECUTADO"
+        ];
+        return $response->withStatus(200)
+        ->withHeader('Content-Type', 'application/json')
+        ->write(json_encode($data));
+    }
+    
+   
 });
 
-function sendMail(){
+function sendMail($email){
     $mail = new PHPMailer;
     $mail->isSMTP(); 
     $mail->SMTPDebug = 2; 

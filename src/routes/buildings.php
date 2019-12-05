@@ -416,7 +416,8 @@ $app->delete('/api/delSpaceTmp/delete/{id}', function(Request $request, Response
         $stmt = $db->prepare($sql);
         $stmt->execute();
         $db = null;
-        actulizar_registro_reserva_desbloquear($id);
+        // actulizar_registro_reserva_desbloquear($id);
+        actulizar_registro_reserva_desbloquear_uno($id);
         echo '{"notice": {"text": "Customer Deleted"}';
     } catch(PDOException $e){
         echo '{"error": {"text": '.$e->getMessage().'}';
@@ -1101,7 +1102,7 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
         $servername = "localhost";
         $username = "root";
         //$password = "";
-        $password = "";
+        $password = "Mysqlparkbd";
         $dbname = "bd_park";
         $conn = mysqli_connect($servername, $username, $password, $dbname);
         $sql = "SELECT * FROM `tb_asignacion_reserva_temp` WHERE `ocupado_m` = '$id_usuario' OR `ocupado_t` = '$id_usuario' OR `ocupado_dia` = '$id_usuario' ";
@@ -1125,11 +1126,11 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
      * asignado o selecionado uno a uno
      */
     function actulizar_registro_reserva_desbloquear_uno($id_user){
-        echo '$id_espacio', $id_espacio;
+        // echo '$id_espacio', $id_espacio;
         $servername = "localhost";
         $username = "root";
         //$password = "";
-        $password = "";
+        $password = "Mysqlparkbd";
         $dbname = "bd_park";
         // Create connection
         $conn = new mysqli($servername, $username, $password, $dbname);
@@ -1137,17 +1138,39 @@ $app->get('/api/freeSpace/{info}', function(Request $request, Response $response
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
         } 
-       
+        // Actualizar tb_asignacion_reserva_temp en el campo ocupado_t si desbloquea tarde el usuario
         $sql = "UPDATE `tb_asignacion_reserva_temp` SET `ocupado_t` = '0' 
-        WHERE `tb_asignacion_reserva_temp`.`ocupado_t` = '$id_user' OR
-        `tb_asignacion_reserva_temp`.`ocupado_m` = '$id_user' OR
-        `tb_asignacion_reserva_temp`.`ocupado_dia` = '$id_user'
+        WHERE `tb_asignacion_reserva_temp`.`ocupado_t` = '$id_user'
         ;";
          echo $sql . "<br>";
     
         if ($conn->query($sql) === TRUE) {
             echo "UPDATEs ";
-            actulizar_registro_reserva_asignada($id_reserva, $id_user, $id_espacio);
+            // actulizar_registro_reserva_asignada($id_reserva, $id_user, $id_espacio);
+        } else {
+            echo "Error updating record: " . $conn->error;
+        }
+        // Actualizar
+        $sql = "UPDATE `tb_asignacion_reserva_temp` SET `ocupado_m` = '0' 
+        WHERE `tb_asignacion_reserva_temp`.`ocupado_m` = '$id_user'
+     
+        ;";
+         echo $sql . "<br>";
+    
+        if ($conn->query($sql) === TRUE) {
+            echo "UPDATEs ";
+            // actulizar_registro_reserva_asignada($id_reserva, $id_user, $id_espacio);
+        } else {
+            echo "Error updating record: " . $conn->error;
+        }
+        $sql = "UPDATE `tb_asignacion_reserva_temp` SET `ocupado_dia` = '0' 
+        WHERE `tb_asignacion_reserva_temp`.`ocupado_dia` = '$id_user'
+        ;";
+         echo $sql . "<br>";
+    
+        if ($conn->query($sql) === TRUE) {
+            echo "UPDATEs ";
+           //  actulizar_registro_reserva_asignada($id_reserva, $id_user, $id_espacio);
         } else {
             echo "Error updating record: " . $conn->error;
         }

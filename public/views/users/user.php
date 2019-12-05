@@ -132,11 +132,11 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
           <div class="table-responsive">
 
           	<?php
-          	$sql = 'SELECT u.id_usuario, CONCAT(u.nombre, " ", u.apellido)  as nombre,  u.email, e.numero as estacionamiento
+          	$sql = 'SELECT u.id_usuario, CONCAT(u.nombre, " ", u.apellido)  as nombre,  u.email, e.numero as estacionamiento,  u.prioridad as prioridad
 			FROM `tb_usuario` u, tb_espacio e
 			WHERE e.id_usuario = u.id_usuario AND u.estado = 1';
 			if(isset($_GET['estacionamiento']) && $_GET['estacionamiento']=='false'){
-				$sql="SELECT u.id_usuario, CONCAT(u.nombre, ' ', u.apellido)  as nombre,  u.email, 'No posee' as estacionamiento
+				$sql="SELECT u.id_usuario, CONCAT(u.nombre, ' ', u.apellido)  as nombre,  u.email, 'No posee' as estacionamiento,  u.prioridad as prioridad
 					  FROM `tb_usuario` u WHERE u.estado = 1 AND u.rol=3";
 			}
           	?>
@@ -147,6 +147,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
                   <th>Nombre</th>
                   <th>Usuario</th>
                   <th># Estacionameinto</th>
+                  <th>Prioridad de reserva</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -164,7 +165,21 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 			                  <td><?php echo $row["nombre"] ?></td>
 			                  <td><?php echo $row["email"] ?></td>
 			                  <td><?php echo $row["estacionamiento"] ?></td>
-			                  
+                        <td>
+                        <?php
+                        if($row["prioridad"]==='3'){
+                          echo 'Baja';
+                        }
+                        if($row["prioridad"]==='2'){
+                          echo 'Media';
+                        }
+                        if($row["prioridad"]==='1'){
+                          echo 'Alta';
+                        }
+                        if($row["prioridad"]==='0'){
+                          echo 'Muy Alta';
+                        }
+                        ?></td>
 			                  <td><a href="edit.php?id=<?php echo $row["id_usuario"] ?>">Editar</a> <a href="delete.php?id=<?php echo $row["id_usuario"] ?>">Eliminar</a></td>
 			              </tr>
 
