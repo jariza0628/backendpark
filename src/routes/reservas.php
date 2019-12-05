@@ -61,6 +61,7 @@ $app->delete('/api/reservations/{id}', function(Request $request, Response $resp
 });
 //crear reservas
 $app->post('/api/reservations', function(Request $request, Response $response){
+    //cambio
     $jornada = $request->getParam('jornada');
     $iduser = $request->getParam('iduser');
     $prioridad = $request->getParam('pri');
